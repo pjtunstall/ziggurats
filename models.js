@@ -32,7 +32,7 @@ export class Model {
   }
 
   spawnRect() {
-    return new Rect(this.midX, this.midY);
+    this.rects.push(new Rect(this.midX, this.midY));
   }
 }
 
@@ -44,8 +44,13 @@ class Rect {
   color;
   type;
   dob;
+  active;
 
   constructor(midX, midY) {
+    this.activate(midX, midY);
+  }
+
+  activate(midX, midY) {
     const width = Math.random();
     const height = Math.random();
     const x = midX - width / 2;
@@ -71,5 +76,6 @@ class Rect {
     this.color = color;
     this.type = type;
     this.dob = dob;
+    this.active = true;
   }
 }

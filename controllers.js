@@ -1,10 +1,12 @@
 export class Controller {
   model;
   view;
+  keysPressed;
 
   constructor(model, view) {
     this.model = model;
     this.view = view;
+    this.keysPressed = {};
     const handleKeydown = this.handleKeydown.bind(this);
     const handleKeyup = this.handleKeyup.bind(this);
     addEventListener("keydown", handleKeydown);
@@ -16,6 +18,7 @@ export class Controller {
   }
 
   handleKeydown(event) {
+    this.keysPressed[event.code] = true;
     switch (event.key) {
       case "Tab":
         event.preventDefault();
@@ -27,15 +30,47 @@ export class Controller {
         break;
       case "ArrowUp":
         this.model.midY -= this.model.omega;
+        if (this.keysPressed["ArrowLeft"]) {
+          this.model.midX -= this.model.omega;
+          break;
+        }
+        if (this.keysPressed["ArrowRight"]) {
+          this.model.midX += this.model.omega;
+          break;
+        }
         break;
       case "ArrowDown":
         this.model.midY += this.model.omega;
+        if (this.keysPressed["ArrowLeft"]) {
+          this.model.midX -= this.model.omega;
+          break;
+        }
+        if (this.keysPressed["ArrowRight"]) {
+          this.model.midX += this.model.omega;
+          break;
+        }
         break;
       case "ArrowLeft":
         this.model.midX -= this.model.omega;
+        if (this.keysPressed["ArrowUp"]) {
+          this.model.midY -= this.model.omega;
+          break;
+        }
+        if (this.keysPressed["ArrowDown"]) {
+          this.model.midY += this.model.omega;
+          break;
+        }
         break;
       case "ArrowRight":
         this.model.midX += this.model.omega;
+        if (this.keysPressed["ArrowUp"]) {
+          this.model.midY -= this.model.omega;
+          break;
+        }
+        if (this.keysPressed["ArrowDown"]) {
+          this.model.midY += this.model.omega;
+          break;
+        }
         break;
       case " ":
         if (!this.model.isFireDelay) {
@@ -52,6 +87,7 @@ export class Controller {
   }
 
   handleKeyup(event) {
+    this.keysPressed[event.code] = false;
     switch (event.key) {
       case "Tab":
       case "q":
@@ -73,17 +109,16 @@ export class Controller {
 
   loop() {
     requestAnimationFrame(() => this.loop());
-    const newRect = this.model.spawnRect();
-    this.model.rects.push(newRect);
 
     this.view.clearCanvas();
 
+    this.model.spawnRect();
     for (let i = 0; i < this.model.rects.length; i++) {
-      this.zoom(this.model.rects[i]);
-      this.view.drawRect(this.model.rects[i]);
+      const rect = this.model.rects[i];
+      this.zoom(rect);
+      this.view.drawRect(rect);
     }
-
-    if (Date.now() - this.model.rects[0].dob > 8192) {
+    if (this.model.rects.length > 255) {
       this.model.rects = this.model.rects.slice(1);
     }
 
