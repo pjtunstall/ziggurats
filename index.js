@@ -1,5 +1,7 @@
 /* GAME
 
+Allow simultaneous keypresses by keeping an array of keys currently down.
+
 Why is the laser blur hidden by clearCanvas and by the rectangles even though they're drawn first and the lasers themselves are not hidden.
 
 Do I want them to move and have the player try to align the crosshairs so that they, the player, move through he hoops, and have some condition to represent failure?
