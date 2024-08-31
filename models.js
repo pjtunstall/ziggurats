@@ -1,7 +1,3 @@
-let midX = innerWidth / 2;
-let midY = innerHeight / 2;
-let start = Date.now();
-
 export class Model {
   speed;
   slow;
@@ -32,7 +28,7 @@ export class Model {
   }
 
   spawnRect() {
-    this.rects.push(new Rect(this.midX, this.midY));
+    this.rects.push(new Rect(this.midX, this.midY, this.start));
   }
 }
 
@@ -46,36 +42,34 @@ class Rect {
   dob;
   active;
 
-  constructor(midX, midY) {
-    this.activate(midX, midY);
-  }
+  constructor(midX, midY, start) {
+    {
+      const width = Math.random();
+      const height = Math.random();
+      const x = midX - width / 2;
+      const y = midY - height / 2;
+      let p = Math.random() * 255;
+      let q = Math.random() * 255;
+      let r;
+      const dob = Date.now();
+      r =
+        dob % 30000 < 10000
+          ? Math.round(Math.random()) * 255
+          : Math.random() * 255;
+      const color =
+        (dob - start) % 70000 < 60000
+          ? `rgb(${r} ${r} ${r})`
+          : `rgb(${p} ${q} ${r})`;
+      const type = Math.random() < 0.3 ? "fill" : "stroke";
 
-  activate(midX, midY) {
-    const width = Math.random();
-    const height = Math.random();
-    const x = midX - width / 2;
-    const y = midY - height / 2;
-    let p = Math.random() * 255;
-    let q = Math.random() * 255;
-    let r;
-    const dob = Date.now();
-    r =
-      dob % 30000 < 10000
-        ? Math.round(Math.random()) * 255
-        : Math.random() * 255;
-    const color =
-      (dob - start) % 70000 < 60000
-        ? `rgb(${r} ${r} ${r})`
-        : `rgb(${p} ${q} ${r})`;
-    const type = Math.random() < 0.3 ? "fill" : "stroke";
-
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.color = color;
-    this.type = type;
-    this.dob = dob;
-    this.active = true;
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+      this.color = color;
+      this.type = type;
+      this.dob = dob;
+      this.active = true;
+    }
   }
 }
