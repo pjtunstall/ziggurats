@@ -22,20 +22,19 @@ export class Controller {
   }
 
   handleKeydown(event) {
-    if (event.key === "Tab") {
+    if (event.code === "Tab") {
       event.preventDefault();
     }
-    this.keysPressed.add(event.key);
+    this.keysPressed.add(event.code);
   }
 
-  // Called from `this.loop` on each key in the set `keysPressed`.
-  actOnKeydown(key) {
-    switch (key) {
+  // Called from `this.loop` on each key code in the set `keysPressed`.
+  actOnKeydown(code) {
+    switch (code) {
       case "Tab":
         this.model.speed = this.model.slow;
         break;
-      case "q":
-      case "Q":
+      case "KeyQ":
         this.model.speed = this.model.fast;
         break;
       case "ArrowUp":
@@ -50,15 +49,13 @@ export class Controller {
       case "ArrowRight":
         this.model.midX += this.model.omega;
         break;
-      case "z":
-      case "Z":
+      case "KeyZ":
         this.view.roll(-Math.PI / 16, this.model.midX, this.model.midY);
         break;
-      case "x":
-      case "X":
+      case "KeyX":
         this.view.roll(Math.PI / 16, this.model.midX, this.model.midY);
         break;
-      case " ":
+      case "Space":
         this.model = new Model();
         this.view = new View();
         break;
@@ -66,11 +63,10 @@ export class Controller {
   }
 
   handleKeyup(event) {
-    this.keysPressed.clear(event.key);
-    switch (event.key) {
+    this.keysPressed.clear(event.code);
+    switch (event.code) {
       case "Tab":
-      case "q":
-      case "Q":
+      case "KeyQ":
         this.model.speed = this.model.normal;
     }
   }
@@ -94,8 +90,8 @@ export class Controller {
   loop() {
     requestAnimationFrame(() => this.loop());
 
-    this.keysPressed.forEach((key) => {
-      this.actOnKeydown(key);
+    this.keysPressed.forEach((code) => {
+      this.actOnKeydown(code);
     });
 
     this.view.clearCanvas();
