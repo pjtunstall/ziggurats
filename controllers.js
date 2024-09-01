@@ -32,8 +32,10 @@ export class Controller {
   }
 
   handleClick(x, y) {
+    this.view.roll(-this.model.theta, this.model.midX, this.model.midY); // correction for rotation
     this.model.midX = x;
     this.model.midY = y;
+    this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
   // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
@@ -72,7 +74,7 @@ export class Controller {
   }
 
   translate(direction, sign) {
-    this.view.roll(-this.model.theta, this.model.midX, this.model.midY);
+    this.view.roll(-this.model.theta, this.model.midX, this.model.midY); // correction for rotation
     this.model[direction] += sign * this.model.omega;
     this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
