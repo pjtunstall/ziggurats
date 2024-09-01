@@ -10,6 +10,26 @@ export class View {
     this.crossSize = 10;
   }
 
+  addEventListener(eventType, handler) {
+    addEventListener(eventType, (event) => {
+      switch (eventType) {
+        case "keydown":
+          if (event.code === "Tab") {
+            event.preventDefault();
+          }
+          handler(event.code);
+        case "keyup":
+          handler(event.code);
+          break;
+        case "click":
+          handler(event.clientX, event.clientY);
+          break;
+        default:
+          handler(event);
+      }
+    });
+  }
+
   sizeCanvas() {
     this.canvas.style.width = innerWidth + "px";
     this.canvas.style.height = innerHeight + "px";

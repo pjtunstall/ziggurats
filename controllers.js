@@ -11,26 +11,34 @@ export class Controller {
     this.model = model;
     this.view = view;
     this.keysPressed = new Set();
-    this.wrapEventListener("keydown", this.handleKeydown);
-    this.wrapEventListener("keyup", this.handleKeyup);
-    this.wrapEventListener("click", this.handleClick);
+    this.view.addEventListener("keydown", (keyCode) =>
+      this.handleKeydown(keyCode)
+    );
+    this.view.addEventListener("keyup", (keyCode) => this.handleKeyup(keyCode));
+    this.view.addEventListener("click", (x, y) => this.handleClick(x, y));
   }
 
-  wrapEventListener(eventType, handler) {
-    const boundHandler = handler.bind(this);
-    addEventListener(eventType, boundHandler);
+  handleKeydown(keyCode) {
+    this.keysPressed.add(keyCode);
   }
 
-  handleKeydown(event) {
-    if (event.code === "Tab") {
-      event.preventDefault();
+  handleKeyup(keyCode) {
+    this.keysPressed.clear(keyCode);
+    switch (keyCode) {
+      case "Tab":
+      case "KeyQ":
+        this.model.speed = this.model.normal;
     }
-    this.keysPressed.add(event.code);
   }
 
-  // Called from `this.loop` on each key code in the set `keysPressed`.
-  actOnKeydown(code) {
-    switch (code) {
+  handleClick(x, y) {
+    this.model.midX = x;
+    this.model.midY = y;
+  }
+
+  // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
+  actOnKeydown(keyCode) {
+    switch (keyCode) {
       case "Tab":
         this.model.speed = this.model.slow;
         break;
@@ -38,22 +46,23 @@ export class Controller {
         this.model.speed = this.model.fast;
         break;
       case "ArrowUp":
-        this.model.midY -= this.model.omega;
+        this.translate("midY", -1);
         break;
       case "ArrowDown":
-        this.model.midY += this.model.omega;
+        this.translate("midY", 1);
         break;
       case "ArrowLeft":
-        this.model.midX -= this.model.omega;
+        this.translate("midX", -1);
         break;
       case "ArrowRight":
-        this.model.midX += this.model.omega;
+        this.translate("midX", 1);
         break;
-      case "KeyZ":
-        this.view.roll(-Math.PI / 16, this.model.midX, this.model.midY);
+      case "KeyZ": {
+        this.roll(-Math.PI / 64);
         break;
+      }
       case "KeyX":
-        this.view.roll(Math.PI / 16, this.model.midX, this.model.midY);
+        this.roll(Math.PI / 64);
         break;
       case "Space":
         this.model = new Model();
@@ -62,18 +71,15 @@ export class Controller {
     }
   }
 
-  handleKeyup(event) {
-    this.keysPressed.clear(event.code);
-    switch (event.code) {
-      case "Tab":
-      case "KeyQ":
-        this.model.speed = this.model.normal;
-    }
+  translate(direction, sign) {
+    this.view.roll(-this.model.theta, this.model.midX, this.model.midY);
+    this.model[direction] += sign * this.model.omega;
+    this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
-  handleClick(event) {
-    this.model.midX = event.clientX;
-    this.model.midY = event.clientY;
+  roll(deltaRoll) {
+    this.view.roll(deltaRoll, this.model.midX, this.model.midY);
+    this.model.theta += deltaRoll;
   }
 
   zoom(rect) {
