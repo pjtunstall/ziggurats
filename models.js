@@ -14,7 +14,7 @@ export class Model {
     this.slow = 0.02;
     this.normal = 0.05;
     this.fast = 0.1;
-    this.omega = 16;
+    this.omega = 4;
     this.midX = innerWidth / 2;
     this.midY = innerHeight / 2;
     this.start = Date.now();

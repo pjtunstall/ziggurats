@@ -10,25 +10,28 @@ export class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.keysPressed = {};
-    this.loopId = null;
-    const handleKeydown = this.handleKeydown.bind(this);
-    const handleKeyup = this.handleKeyup.bind(this);
-    const handleClick = this.handleClick.bind(this);
-    addEventListener("keydown", handleKeydown);
-    addEventListener("keyup", handleKeyup);
-    addEventListener("click", handleClick);
+    this.keysPressed = new Set();
+    this.wrapEventListener("keydown", this.handleKeydown);
+    this.wrapEventListener("keyup", this.handleKeyup);
+    this.wrapEventListener("click", this.handleClick);
   }
 
-  startLoop() {
-    this.loopId = requestAnimationFrame(() => this.loop());
+  wrapEventListener(eventType, handler) {
+    const boundHandler = handler.bind(this);
+    addEventListener(eventType, boundHandler);
   }
 
   handleKeydown(event) {
-    this.keysPressed[event.code] = true;
-    switch (event.key) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+    }
+    this.keysPressed.add(event.key);
+  }
+
+  // Called from `this.loop` on each key in the set `keysPressed`.
+  actOnKeydown(key) {
+    switch (key) {
       case "Tab":
-        event.preventDefault();
         this.model.speed = this.model.slow;
         break;
       case "q":
@@ -37,47 +40,15 @@ export class Controller {
         break;
       case "ArrowUp":
         this.model.midY -= this.model.omega;
-        if (this.keysPressed["ArrowLeft"]) {
-          this.model.midX -= this.model.omega;
-          break;
-        }
-        if (this.keysPressed["ArrowRight"]) {
-          this.model.midX += this.model.omega;
-          break;
-        }
         break;
       case "ArrowDown":
         this.model.midY += this.model.omega;
-        if (this.keysPressed["ArrowLeft"]) {
-          this.model.midX -= this.model.omega;
-          break;
-        }
-        if (this.keysPressed["ArrowRight"]) {
-          this.model.midX += this.model.omega;
-          break;
-        }
         break;
       case "ArrowLeft":
         this.model.midX -= this.model.omega;
-        if (this.keysPressed["ArrowUp"]) {
-          this.model.midY -= this.model.omega;
-          break;
-        }
-        if (this.keysPressed["ArrowDown"]) {
-          this.model.midY += this.model.omega;
-          break;
-        }
         break;
       case "ArrowRight":
         this.model.midX += this.model.omega;
-        if (this.keysPressed["ArrowUp"]) {
-          this.model.midY -= this.model.omega;
-          break;
-        }
-        if (this.keysPressed["ArrowDown"]) {
-          this.model.midY += this.model.omega;
-          break;
-        }
         break;
       case "z":
       case "Z":
@@ -90,11 +61,12 @@ export class Controller {
       case " ":
         this.model = new Model();
         this.view = new View();
+        break;
     }
   }
 
   handleKeyup(event) {
-    this.keysPressed[event.code] = false;
+    this.keysPressed.clear(event.key);
     switch (event.key) {
       case "Tab":
       case "q":
@@ -122,6 +94,10 @@ export class Controller {
   loop() {
     requestAnimationFrame(() => this.loop());
 
+    this.keysPressed.forEach((key) => {
+      this.actOnKeydown(key);
+    });
+
     this.view.clearCanvas();
 
     this.model.spawnRect();
@@ -135,5 +111,9 @@ export class Controller {
     }
 
     this.view.drawCrosshairs(this.model.midX, this.model.midY);
+  }
+
+  startLoop() {
+    this.loopId = requestAnimationFrame(() => this.loop());
   }
 }

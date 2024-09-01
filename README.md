@@ -93,12 +93,3 @@ if (this.model.isFire) {
 ```
 
 directly after the lines dealing with the crosshairs.
-
-## 5. Further
-
-- Compare performance of doing the drawing offscreen.
-- Find a neater way to handle simultaneous keypresses.
-- Try other visual effects.
-- Add an indicator to show which way up you are.
-- Organize controls: pitch, roll, yaw. Look into quaternions?
-- Add logic to undo transformations without a full reset.
