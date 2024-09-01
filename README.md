@@ -12,13 +12,13 @@
 
 [5.Further ](#5-further)
 
-## 1. Intention <a href="#toc">⬆ Back to top</a>
+## 1. Intention
 
-[This](https://ziggurats.netlify.app/) is a little project I came up with to learn about the Canvas API and MVC architecture.
+[This](https://ziggurats.netlify.app/) is a little project I came up with to learn about the Canvas API and MVC architecture. <a href="#toc">⬆ Back to top</a>
 
-## 2. Instructions <a href="#toc">⬆ Back to top</a>
+## 2. Instructions
 
-Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset.
+Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset. <a href="#toc">⬆ Back to top</a>
 
 ## 3. Curiosities <a href="#toc">⬆ Back to top</a>
 
@@ -94,7 +94,7 @@ if (this.model.isFire) {
 }
 ```
 
-directly after the lines dealing with the crosshairs.
+directly after the lines dealing with the crosshairs. <a href="#toc">⬆ Back to top</a>
 
 ## 5. Further <a href="#toc">⬆ Back to top</a>
 
@@ -104,3 +104,5 @@ directly after the lines dealing with the crosshairs.
 - Add an indicator to show which way up you are.
 - Organize controls: pitch, roll, yaw. Look into quaternions?
 - Add logic to undo transformations without a full reset.
+
+<a href="#toc">⬆ Back to top</a>
