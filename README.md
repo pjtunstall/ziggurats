@@ -20,7 +20,7 @@
 
 Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset. <a href="#toc">⬆ Back to top</a>
 
-## 3. Curiosities <a href="#toc">⬆ Back to top</a>
+## 3. Curiosities
 
 At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones:
 
@@ -36,9 +36,9 @@ if (this.model.rects.length > 255) {
 }
 ```
 
-I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
+I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles. <a href="#toc">⬆ Back to top</a>
 
-## 4. Questions <a href="#toc">⬆ Back to top</a>
+## 4. Questions
 
 My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way.
 
@@ -96,7 +96,7 @@ if (this.model.isFire) {
 
 directly after the lines dealing with the crosshairs. <a href="#toc">⬆ Back to top</a>
 
-## 5. Further <a href="#toc">⬆ Back to top</a>
+## 5. Further
 
 - Compare performance of doing the drawing offscreen.
 - Find a neater way to handle simultaneous keypresses.
