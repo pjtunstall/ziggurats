@@ -1,6 +1,4 @@
-# Ziggurat
-
-<a name="toc"></a>
+# Ziggurats
 
 [1. Intention](#1-intention)
 
@@ -14,11 +12,11 @@
 
 ## 1. Intention
 
-[This](https://ziggurats.netlify.app/) is a little project I came up with to learn about the Canvas API and MVC architecture. <a href="#toc">⬆ Back to top</a>
+[This](https://ziggurats.netlify.app/) is a little project I came up with to learn about the Canvas API and MVC architecture.
 
 ## 2. Instructions
 
-Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset. <a href="#toc">⬆ Back to top</a>
+Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset.
 
 ## 3. Curiosities
 
@@ -36,7 +34,7 @@ if (this.model.rects.length > 255) {
 }
 ```
 
-I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles. <a href="#toc">⬆ Back to top</a>
+I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
 
 ## 4. Questions
 
@@ -94,7 +92,7 @@ if (this.model.isFire) {
 }
 ```
 
-directly after the lines dealing with the crosshairs. <a href="#toc">⬆ Back to top</a>
+directly after the lines dealing with the crosshairs.
 
 ## 5. Further
 
@@ -104,5 +102,3 @@ directly after the lines dealing with the crosshairs. <a href="#toc">⬆ Back to
 - Add an indicator to show which way up you are.
 - Organize controls: pitch, roll, yaw. Look into quaternions?
 - Add logic to undo transformations without a full reset.
-
-<a href="#toc">⬆ Back to top</a>
