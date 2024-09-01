@@ -1,20 +1,27 @@
+import { Model } from "./models.js";
+import { View } from "./views.js";
+
 export class Controller {
   model;
   view;
   keysPressed;
+  loopId;
 
   constructor(model, view) {
     this.model = model;
     this.view = view;
     this.keysPressed = {};
+    this.loopId = null;
     const handleKeydown = this.handleKeydown.bind(this);
     const handleKeyup = this.handleKeyup.bind(this);
+    const handleClick = this.handleClick.bind(this);
     addEventListener("keydown", handleKeydown);
     addEventListener("keyup", handleKeyup);
+    addEventListener("click", handleClick);
   }
 
   startLoop() {
-    requestAnimationFrame(() => this.loop());
+    this.loopId = requestAnimationFrame(() => this.loop());
   }
 
   handleKeydown(event) {
@@ -72,17 +79,17 @@ export class Controller {
           break;
         }
         break;
+      case "z":
+      case "Z":
+        this.view.roll(-Math.PI / 16, this.model.midX, this.model.midY);
+        break;
+      case "x":
+      case "X":
+        this.view.roll(Math.PI / 16, this.model.midX, this.model.midY);
+        break;
       case " ":
-        if (!this.model.isFireDelay) {
-          this.model.isFire = true;
-          this.model.isFireDelay = true;
-          setTimeout(() => {
-            this.model.isFire = false;
-            setTimeout(() => {
-              this.model.isFireDelay = false;
-            }, 222);
-          }, 100);
-        }
+        this.model = new Model();
+        this.view = new View();
     }
   }
 
@@ -94,6 +101,11 @@ export class Controller {
       case "Q":
         this.model.speed = this.model.normal;
     }
+  }
+
+  handleClick(event) {
+    this.model.midX = event.clientX;
+    this.model.midY = event.clientY;
   }
 
   zoom(rect) {
@@ -123,11 +135,5 @@ export class Controller {
     }
 
     this.view.drawCrosshairs(this.model);
-    this.model.midX -= (this.model.midX - innerWidth / 2) * this.model.drift;
-    this.model.midY -= (this.model.midY - innerHeight / 2) * this.model.drift;
-
-    if (this.model.isFire) {
-      this.view.drawFire(this.model);
-    }
   }
 }

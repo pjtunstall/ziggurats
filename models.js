@@ -4,9 +4,6 @@ export class Model {
   normal;
   fast;
   omega; // angular speed in px
-  drift;
-  isFire;
-  isFireDelay;
   midX;
   midY;
   start;
@@ -18,9 +15,6 @@ export class Model {
     this.normal = 0.05;
     this.fast = 0.1;
     this.omega = 16;
-    this.drift = 0.01;
-    this.isFire = false;
-    this.isFireDelay = false;
     this.midX = innerWidth / 2;
     this.midY = innerHeight / 2;
     this.start = Date.now();

@@ -1,12 +1,24 @@
 export class View {
+  canvas;
   ctx;
   crossSize;
-  canvas;
 
-  constructor(canvas) {
+  constructor() {
+    this.canvas = document.getElementById("canvas");
+    this.sizeCanvas();
+    this.ctx = this.canvas.getContext("2d");
     this.crossSize = 10;
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+  }
+
+  sizeCanvas() {
+    this.canvas.style.width = innerWidth + "px";
+    this.canvas.style.height = innerHeight + "px";
+
+    const width = parseInt(this.canvas.style.width, 10);
+    const height = parseInt(this.canvas.style.height, 10);
+
+    this.canvas.width = width * devicePixelRatio;
+    this.canvas.height = height * devicePixelRatio;
   }
 
   clearCanvas() {
@@ -25,10 +37,7 @@ export class View {
     }
   }
 
-  drawCrosshairs(model) {
-    const x = model.midX;
-    const y = model.midY;
-
+  drawCrosshairs(x, y) {
     this.ctx.save();
 
     this.ctx.strokeStyle = "red";
@@ -46,27 +55,9 @@ export class View {
     this.ctx.restore();
   }
 
-  drawFire(model) {
-    const x = model.midX;
-    const y = model.midY;
-
-    this.ctx.save();
-
-    this.ctx.strokeStyle = "red";
-    this.ctx.shadowBlur = 16;
-    this.ctx.shadowColor = "rgba(255, 0, 0, 0.5)";
-    this.ctx.lineWidth = 2;
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, this.canvas.height);
-    this.ctx.lineTo(x, y);
-    this.ctx.stroke();
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.canvas.width, this.canvas.height);
-    this.ctx.lineTo(x, y);
-    this.ctx.stroke();
-
-    this.ctx.restore();
+  roll(theta, x, y) {
+    this.ctx.translate(x, y);
+    this.ctx.rotate(theta);
+    this.ctx.translate(-x, -y);
   }
 }
