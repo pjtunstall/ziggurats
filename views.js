@@ -8,6 +8,9 @@ export class View {
     this.sizeCanvas();
     this.ctx = this.canvas.getContext("2d");
     this.crossSize = 10;
+    addEventListener("resize", () => {
+      location.reload();
+    });
   }
 
   addEventListener(eventType, handler) {
