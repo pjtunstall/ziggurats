@@ -1,14 +1,20 @@
 # Ziggurat
 
-## Intention
+[1. Intention](#1-intention)
+[2. Instructions](#2-instructions)
+[3. Curiosities](#3-curiosities)
+[4. Questions](#4-questions)
+[5.Further ](#5-further)
+
+## 1. Intention
 
 This is a little project I came up with to learn about the Canvas API and MVC architecture.
 
-## Instructions
+## 2. Instructions
 
 Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset.
 
-## Curiosities
+## 3. Curiosities
 
 At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones:
 
@@ -26,7 +32,9 @@ if (this.model.rects.length > 255) {
 
 I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
 
-## Questions
+## 4. Questions
+
+My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way.
 
 At one time, I tried adding this laser effect, called at the end of `controller.loop`. The lines were visible, but the blur was hidden by `clearCanvas` or, without `clearCanvas`, by the rectangles as they expanded to fill the screen, even though `drawFire` was called afterwards. Why?
 
@@ -81,3 +89,12 @@ if (this.model.isFire) {
 ```
 
 directly after the lines dealing with the crosshairs.
+
+## 5. Further
+
+- Compare performance of doing the drawing offscreen.
+- Find a neater way to handle simultaneous keypresses.
+- Try other visual effects.
+- Add an indicator to show which way up you are.
+- Organize controls: pitch, roll, yaw. Look into quaternions?
+- Add logic to undo transformations without a full reset.
