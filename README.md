@@ -12,7 +12,7 @@
 
 ## 1. Intention
 
-[This](https://ziggurats.netlify.app/) is a little project I came up with to learn about the Canvas API and MVC architecture.
+[Ziggurats](https://ziggurats.netlify.app/) is a little exercise I came up with to learn about the Canvas API and MVC architecture.
 
 ## 2. Instructions
 
