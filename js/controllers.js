@@ -32,12 +32,10 @@ export class Controller {
   }
 
   handleClick(x, y) {
+    this.view.roll(-this.model.theta, this.model.midX, this.model.midY);
     this.model.midX = x;
     this.model.midY = y;
-    for (rect of this.model.rects) {
-      this.rect.x -= x - midX;
-      this.rect.y -= y - midY;
-    }
+    this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
   // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
