@@ -4,7 +4,7 @@
 
 [2. Instructions](#2-instructions)
 
-[3. Curiosities](#3-curiosities)
+[3. Performance](#3-performance)
 
 [4. Questions](#4-questions)
 
@@ -18,7 +18,7 @@
 
 Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click to spawn rectangles from an arbitrary point. Space to reset.
 
-## 3. Curiosities
+## 3. Performance
 
 At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones:
 
@@ -35,6 +35,59 @@ if (this.model.rects.length > 255) {
 ```
 
 I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
+
+On the other hand, ILP (instruction-level parallelism) does improve the performance of looping through the rectangles. Run `node benchmark.js` to compare the naive version of `controller.translate` with the current ILP-optimized one. The benchmark populates an array with the maximum number, 256, of rectangle objects then compares the two functions over ten million trials each. I find that ILP tends to be between 1.1 and 1.4 times faster, with 1.2 being typical, although I did once see naive score 1.1 times faster.
+
+```javascript
+translate(axis, sign, distance) { // naive
+  for (const rect of this.model.rects) {
+    rect[axis] -= sign * distance;
+  }
+}
+```
+
+```javascript
+translate(axis, sign, distance) { // ILP
+  for (let i = 0; i < Math.floor(this.model.rects.length / 4); i++) {
+    this.model.rects[4 * i][axis] -= sign * distance;
+    this.model.rects[4 * i + 1][axis] -= sign * distance;
+    this.model.rects[4 * i + 2][axis] -= sign * distance;
+    this.model.rects[4 * i + 3][axis] -= sign * distance;
+  }
+  for (let i = 0; i < this.model.rects.length % 4; i++) {
+    this.model.rects[this.model.rects.length - 1 - i][axis] -=
+      sign * distance;
+  }
+}
+```
+
+On the basis of this, I also replaced the following simple loop in `controller.loop`.
+
+```javascript
+for (let i = 0; i < this.model.rects.length; i++) {
+  const rect = this.model.rects[i];
+  this.zoom(rect);
+  this.view.drawRect(rect);
+}
+```
+
+Current ILP-optimized version:
+
+```javascript
+for (let i = 0; i < Math.floor(this.model.rects.length / 4); i++) {
+  this.zoom(this.model.rects[4 * i]);
+  this.zoom(this.model.rects[4 * i + 1]);
+  this.zoom(this.model.rects[4 * i + 2]);
+  this.zoom(this.model.rects[4 * i + 3]);
+  this.view.drawRect(this.model.rects[4 * i]);
+  this.view.drawRect(this.model.rects[4 * i + 1]);
+  this.view.drawRect(this.model.rects[4 * i + 2]);
+  this.view.drawRect(this.model.rects[4 * i + 3]);
+}
+for (let i = 0; i < this.model.rects.length % 4; i++) {
+  this.zoom(this.model.rects[this.model.rects.length - 1 - i]);
+}
+```
 
 ## 4. Questions
 

@@ -3,8 +3,8 @@ export class Model {
   slow;
   normal;
   fast;
-  omega; // angular speed in px
-  theta; // roll in radians
+  omega; // pitch and yaw speed in px
+  theta; // total roll in radians
   midX;
   midY;
   start;
@@ -36,7 +36,6 @@ class Rect {
   color;
   type;
   dob;
-  active;
 
   constructor(midX, midY, start) {
     {
@@ -65,7 +64,6 @@ class Rect {
       this.color = color;
       this.type = type;
       this.dob = dob;
-      this.active = true;
     }
   }
 }
