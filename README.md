@@ -16,7 +16,7 @@
 
 ## 2. Instructions
 
-Arrow keys to move the generation point incrementally, and click to relocate it entirely. Tab and Q to adjust speed. Z and X to rotate. Space to reset.
+Arrow keys to change direction incrementally and click to jump to a new direction. Tab and Q to adjust speed. Z and X to rotate. Space to reset.
 
 ## 3. Curiosities
 

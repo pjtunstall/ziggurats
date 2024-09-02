@@ -32,10 +32,10 @@ export class Controller {
   }
 
   handleClick(x, y) {
-    this.view.roll(-this.model.theta, this.model.midX, this.model.midY);
-    this.model.midX = x;
-    this.model.midY = y;
-    this.view.roll(this.model.theta, this.model.midX, this.model.midY);
+    const deltaX = x - this.model.midX;
+    const deltaY = y - this.model.midY;
+    this.translate("midX", 1, deltaX);
+    this.translate("midY", 1, deltaY);
   }
 
   // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
@@ -48,16 +48,16 @@ export class Controller {
         this.model.speed = this.model.fast;
         break;
       case "ArrowUp":
-        this.translate("midY", -1);
+        this.translate("midY", -1, this.model.omega);
         break;
       case "ArrowDown":
-        this.translate("midY", 1);
+        this.translate("midY", 1, this.model.omega);
         break;
       case "ArrowLeft":
-        this.translate("midX", -1);
+        this.translate("midX", -1, this.model.omega);
         break;
       case "ArrowRight":
-        this.translate("midX", 1);
+        this.translate("midX", 1, this.model.omega);
         break;
       case "KeyZ": {
         this.roll(-Math.PI / 64);
@@ -73,9 +73,15 @@ export class Controller {
     }
   }
 
-  translate(direction, sign) {
+  translate(axis, sign, distance) {
     this.view.roll(-this.model.theta, this.model.midX, this.model.midY); // correction for rotation
-    this.model[direction] += sign * this.model.omega;
+    for (const rect of this.model.rects) {
+      if (axis === "midX") {
+        rect.x -= sign * distance;
+      } else {
+        rect.y -= sign * distance;
+      }
+    }
     this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
