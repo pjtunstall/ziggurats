@@ -92,4 +92,4 @@ if (this.model.isFire) {
 }
 ```
 
-directly after the lines dealing with the crosshairs.
+directly after the lines dealing with the crosshairs. Note that this was before I implemented rotation and so not designed with that in mind.
