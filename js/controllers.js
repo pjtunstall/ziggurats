@@ -31,13 +31,6 @@ export class Controller {
     }
   }
 
-  handleClick(x, y) {
-    const deltaX = x - this.model.midX;
-    const deltaY = y - this.model.midY;
-    this.translate("midX", 1, deltaX);
-    this.translate("midY", 1, deltaY);
-  }
-
   // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
   actOnKeydown(keyCode) {
     switch (keyCode) {
@@ -73,8 +66,16 @@ export class Controller {
     }
   }
 
+  handleClick(x, y) {
+    this.roll(-this.model.theta, this.model.midX, this.model.midY);
+    const deltaX = x - this.model.midX;
+    const deltaY = y - this.model.midY;
+    this.translate("midX", 1, -deltaX);
+    this.translate("midY", 1, -deltaY);
+    this.roll(this.model.theta, this.model.midX, this.model.midY);
+  }
+
   translate(axis, sign, distance) {
-    this.view.roll(-this.model.theta, this.model.midX, this.model.midY); // correction for rotation
     for (const rect of this.model.rects) {
       if (axis === "midX") {
         rect.x -= sign * distance;
@@ -82,7 +83,6 @@ export class Controller {
         rect.y -= sign * distance;
       }
     }
-    this.view.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
   roll(deltaRoll) {
