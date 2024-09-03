@@ -7,7 +7,7 @@ export class View {
     this.canvas = document.getElementById("canvas");
     this.setCanvasSize(this.canvas, innerWidth, innerHeight);
     this.ctx = this.canvas.getContext("2d");
-    this.crossSize = 10 * devicePixelRatio;
+    this.crossSize = 16 * devicePixelRatio;
     addEventListener("resize", () => {
       location.reload();
     });
