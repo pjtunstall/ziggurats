@@ -48,33 +48,33 @@ translate(axis, sign, distance) { // naive
 
 ```javascript
 translate(axis, sign, distance) { // unrolled
-  const difference = sign * distance;
+  const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    rects[8 * i][axis] -= sign * distance;
-    rects[8 * i + 1][axis] -= difference;
-    rects[8 * i + 2][axis] -= difference;
-    rects[8 * i + 3][axis] -= difference;
-    rects[8 * i + 4][axis] -= difference;
-    rects[8 * i + 5][axis] -= difference;
-    rects[8 * i + 6][axis] -= difference;
-    rects[8 * i + 7][axis] -= difference;
+    rects[8 * i][axis] += sign * distance;
+    rects[8 * i + 1][axis] += difference;
+    rects[8 * i + 2][axis] += difference;
+    rects[8 * i + 3][axis] += difference;
+    rects[8 * i + 4][axis] += difference;
+    rects[8 * i + 5][axis] += difference;
+    rects[8 * i + 6][axis] += difference;
+    rects[8 * i + 7][axis] += difference;
   }
-  for (let i = 0; i < rects.length % 8; i++) {
-    rects[rects.length - 1 - i][axis] -= difference;
+  for (let i = 1; i <= rects.length % 8; i++) {
+    rects[rects.length - i][axis] += difference;
   }
 }
 ```
 
-The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. Typical results are:
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical.
 
 ```
-naive: 5642
-unrolled2: 5828
-unrolled4: 4769
-unrolled8: 4465
-naive is 1.032967032967033 times faster than unrolled2.
-unrolled4 is 1.1830572447053889 times faster than naive.
-unrolled8 is 1.2636058230683092 times faster than naive.
+naive: 7420
+unrolled2: 8978
+unrolled4: 5884
+unrolled8: 5702
+naive is 1.2099730458221025 times faster than unrolled2.
+unrolled4 is 1.2610469068660775 times faster than naive.
+unrolled8 is 1.3012977902490355 times faster than naive.
 ```
 
 On the basis of this, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.

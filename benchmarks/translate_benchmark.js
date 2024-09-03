@@ -11,43 +11,43 @@ for (let i = 0; i < 256; i++) {
 }
 
 function unrolled2Translate(axis, sign, distance) {
-  const difference = sign * distance;
+  const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 2); i++) {
-    rects[2 * i][axis] -= difference;
-    rects[2 * i + 1][axis] -= difference;
+    rects[2 * i][axis] += difference;
+    rects[2 * i + 1][axis] += difference;
   }
-  for (let i = 0; i < rects.length % 2; i++) {
-    rects[rects.length - 1 - i][axis] -= difference;
+  for (let i = 1; i <= rects.length % 2; i++) {
+    rects[rects.length - i][axis] += difference;
   }
 }
 
 function unrolled4Translate(axis, sign, distance) {
-  const difference = sign * distance;
+  const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 4); i++) {
-    rects[4 * i][axis] -= difference;
-    rects[4 * i + 1][axis] -= difference;
-    rects[4 * i + 2][axis] -= difference;
-    rects[4 * i + 3][axis] -= difference;
+    rects[4 * i][axis] += difference;
+    rects[4 * i + 1][axis] += difference;
+    rects[4 * i + 2][axis] += difference;
+    rects[4 * i + 3][axis] += difference;
   }
-  for (let i = 0; i < rects.length % 4; i++) {
-    rects[rects.length - 1 - i][axis] -= difference;
+  for (let i = 1; i <= rects.length % 4; i++) {
+    rects[rects.length - i][axis] += difference;
   }
 }
 
 function unrolled8Translate(axis, sign, distance) {
-  const difference = sign * distance;
+  const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    rects[8 * i][axis] -= sign * distance;
-    rects[8 * i + 1][axis] -= difference;
-    rects[8 * i + 2][axis] -= difference;
-    rects[8 * i + 3][axis] -= difference;
-    rects[8 * i + 4][axis] -= difference;
-    rects[8 * i + 5][axis] -= difference;
-    rects[8 * i + 6][axis] -= difference;
-    rects[8 * i + 7][axis] -= difference;
+    rects[8 * i][axis] += sign * distance;
+    rects[8 * i + 1][axis] += difference;
+    rects[8 * i + 2][axis] += difference;
+    rects[8 * i + 3][axis] += difference;
+    rects[8 * i + 4][axis] += difference;
+    rects[8 * i + 5][axis] += difference;
+    rects[8 * i + 6][axis] += difference;
+    rects[8 * i + 7][axis] += difference;
   }
   for (let i = 0; i < rects.length % 8; i++) {
-    rects[rects.length - 1 - i][axis] -= difference;
+    rects[rects.length - 1 - i][axis] += difference;
   }
 }
 
