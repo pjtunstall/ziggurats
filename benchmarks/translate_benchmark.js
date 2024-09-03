@@ -57,6 +57,33 @@ function unrolled8translate(axis, sign, distance) {
   }
 }
 
+function unrolled16translate(axis, sign, distance) {
+  let k;
+  const difference = -sign * distance;
+  for (let i = 0; i < Math.floor(rects.length / 16); i++) {
+    k = 16 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
+  }
+  for (let i = 1; i <= rects.length % 16; i++) {
+    rects[rects.length - i][axis] += difference;
+  }
+}
+
 function naiveTranslate(axis, sign, distance) {
   for (const rect of rects) {
     rect[axis] -= sign * distance;
@@ -83,6 +110,12 @@ const unrolled8 = Date.now() - start;
 
 start = Date.now();
 for (let i = 0; i < 10_000_000; i++) {
+  unrolled16translate("x", -1, 8);
+}
+const unrolled16 = Date.now() - start;
+
+start = Date.now();
+for (let i = 0; i < 10_000_000; i++) {
   naiveTranslate("x", -1, 8);
 }
 const naive = Date.now() - start;
@@ -91,6 +124,7 @@ console.log("naive:", naive);
 console.log("unrolled2:", unrolled2);
 console.log("unrolled4:", unrolled4);
 console.log("unrolled8:", unrolled8);
+console.log("unrolled16:", unrolled16);
 
 if (unrolled2 < naive) {
   console.log(`unrolled2 is ${naive / unrolled2} times faster than naive.`);
@@ -107,5 +141,11 @@ if (unrolled4 < naive) {
 if (unrolled8 < naive) {
   console.log(`unrolled8 is ${naive / unrolled8} times faster than naive.`);
 } else {
-  console.log(`naive is ${unrolled8 / naive} times faster than unrolled4.`);
+  console.log(`naive is ${unrolled8 / naive} times faster than unrolled8.`);
+}
+
+if (unrolled16 < naive) {
+  console.log(`unrolled16 is ${naive / unrolled16} times faster than naive.`);
+} else {
+  console.log(`naive is ${unrolled16 / naive} times faster than unrolled16.`);
 }

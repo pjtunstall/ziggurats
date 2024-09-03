@@ -51,6 +51,7 @@ translate(axis, sign, distance) { // unrolled
   let k;
   const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 8); i++) {
+    k = 8 * i;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
@@ -66,19 +67,21 @@ translate(axis, sign, distance) { // unrolled
 }
 ```
 
-The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, but the higher-numbered unrolls tend to be faster.
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, and unrolled2 is frequently slower than naive, but, on the whole, the higher-numbered unrolls tend to be faster, up to 8 and 16, which are close and change places often.
 
 ```
-naive: 7743
-unrolled2: 6511
-unrolled4: 5021
-unrolled8: 4398
-unrolled2 is 1.1892182460451544 times faster than naive.
-unrolled4 is 1.542123083051185 times faster than naive.
-unrolled8 is 1.7605729877216916 times faster than naive.
+naive: 5644
+unrolled2: 6164
+unrolled4: 4953
+unrolled8: 4331
+unrolled16: 4260
+naive is 1.0921332388377039 times faster than unrolled2.
+unrolled4 is 1.1395114072279426 times faster than naive.
+unrolled8 is 1.3031632417455552 times faster than naive.
+unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of this, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.
+On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
