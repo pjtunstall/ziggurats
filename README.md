@@ -20,7 +20,7 @@ Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click t
 
 ## 3. Performance
 
-At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones:
+At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones.
 
 ```javascript
 this.model.spawnRect(); // this.rects.push(new Rect(this.midX, this.midY, this.start));
@@ -36,7 +36,7 @@ if (this.model.rects.length > 255) {
 
 I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
 
-On the other hand, ILP (instruction-level parallelism) does improve the performance of looping through the rectangles. Run `node benchmark.js` to compare the naive version of `controller.translate` with the current ILP-optimized one. The benchmark populates an array with the maximum number, 256, of rectangle objects then compares the two functions over ten million trials each. I find that ILP tends to be between 1.1 and 1.4 times faster, with 1.2 being typical, although I did once see naive score 1.1 times faster.
+On the other hand, unrolling loops to take advantage of instruction-level parallelism can improve performance. Run `node benchmarks/translate_benchmark.js` to compare the naive version of `controller.translate` with three other versions unrolled to execute, respectively, two, four, and eight lines per iteration.
 
 ```javascript
 translate(axis, sign, distance) { // naive
@@ -47,45 +47,43 @@ translate(axis, sign, distance) { // naive
 ```
 
 ```javascript
-translate(axis, sign, distance) { // ILP
-  for (let i = 0; i < Math.floor(this.model.rects.length / 4); i++) {
-    this.model.rects[4 * i][axis] -= sign * distance;
-    this.model.rects[4 * i + 1][axis] -= sign * distance;
-    this.model.rects[4 * i + 2][axis] -= sign * distance;
-    this.model.rects[4 * i + 3][axis] -= sign * distance;
+translate(axis, sign, distance) { // unrolled
+  const difference = sign * distance;
+  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
+    rects[8 * i][axis] -= sign * distance;
+    rects[8 * i + 1][axis] -= difference;
+    rects[8 * i + 2][axis] -= difference;
+    rects[8 * i + 3][axis] -= difference;
+    rects[8 * i + 4][axis] -= difference;
+    rects[8 * i + 5][axis] -= difference;
+    rects[8 * i + 6][axis] -= difference;
+    rects[8 * i + 7][axis] -= difference;
   }
-  for (let i = 0; i < this.model.rects.length % 4; i++) {
-    this.model.rects[this.model.rects.length - 1 - i][axis] -=
-      sign * distance;
+  for (let i = 0; i < rects.length % 8; i++) {
+    rects[rects.length - 1 - i][axis] -= difference;
   }
 }
 ```
 
-On the basis of this, I also replaced the following simple loop in `controller.loop`.
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. Typical results are:
+
+```
+naive: 5642
+unrolled2: 5828
+unrolled4: 4769
+unrolled8: 4465
+naive is 1.032967032967033 times faster than unrolled2.
+unrolled4 is 1.1830572447053889 times faster than naive.
+unrolled8 is 1.2636058230683092 times faster than naive.
+```
+
+On the basis of this, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
   const rect = this.model.rects[i];
   this.zoom(rect);
   this.view.drawRect(rect);
-}
-```
-
-Current ILP-optimized version:
-
-```javascript
-for (let i = 0; i < Math.floor(this.model.rects.length / 4); i++) {
-  this.zoom(this.model.rects[4 * i]);
-  this.zoom(this.model.rects[4 * i + 1]);
-  this.zoom(this.model.rects[4 * i + 2]);
-  this.zoom(this.model.rects[4 * i + 3]);
-  this.view.drawRect(this.model.rects[4 * i]);
-  this.view.drawRect(this.model.rects[4 * i + 1]);
-  this.view.drawRect(this.model.rects[4 * i + 2]);
-  this.view.drawRect(this.model.rects[4 * i + 3]);
-}
-for (let i = 0; i < this.model.rects.length % 4; i++) {
-  this.zoom(this.model.rects[this.model.rects.length - 1 - i]);
 }
 ```
 
@@ -145,4 +143,4 @@ if (this.model.isFire) {
 }
 ```
 
-directly after the lines dealing with the crosshairs. Note that this was before I implemented rotation and so not designed with that in mind.
+directly after the lines dealing with the crosshairs. Note that this was before I implemented the roll motion and so not designed with that in mind.
