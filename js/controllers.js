@@ -8,8 +8,10 @@ export class Controller {
   loopId;
   time;
   count;
+  frame;
 
   constructor(model, view) {
+    this.frame = 50 / 3;
     this.time = 0;
     this.count = 0;
     this.model = model;
@@ -115,8 +117,11 @@ export class Controller {
     rect.y -= heightIncrease / 2;
   }
 
-  loop() {
-    requestAnimationFrame(() => this.loop());
+  loop(timestamp) {
+    requestAnimationFrame((timestamp) => this.loop(timestamp));
+    if (Date.now() - timestamp < this.frame) {
+      return;
+    }
 
     this.keysPressed.forEach((code) => {
       this.actOnKeydown(code);
@@ -159,6 +164,6 @@ export class Controller {
   }
 
   startLoop() {
-    this.loopId = requestAnimationFrame(() => this.loop());
+    this.loopId = requestAnimationFrame((timestamp) => this.loop(timestamp));
   }
 }
