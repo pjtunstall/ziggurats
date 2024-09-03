@@ -48,16 +48,17 @@ translate(axis, sign, distance) { // naive
 
 ```javascript
 translate(axis, sign, distance) { // unrolled
+  let k;
   const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    rects[8 * i][axis] += sign * distance;
-    rects[8 * i + 1][axis] += difference;
-    rects[8 * i + 2][axis] += difference;
-    rects[8 * i + 3][axis] += difference;
-    rects[8 * i + 4][axis] += difference;
-    rects[8 * i + 5][axis] += difference;
-    rects[8 * i + 6][axis] += difference;
-    rects[8 * i + 7][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
   }
   for (let i = 1; i <= rects.length % 8; i++) {
     rects[rects.length - i][axis] += difference;
@@ -65,16 +66,16 @@ translate(axis, sign, distance) { // unrolled
 }
 ```
 
-The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical.
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, but the higher-numbered unrolls tend to be faster.
 
 ```
-naive: 7420
-unrolled2: 8978
-unrolled4: 5884
-unrolled8: 5702
-naive is 1.2099730458221025 times faster than unrolled2.
-unrolled4 is 1.2610469068660775 times faster than naive.
-unrolled8 is 1.3012977902490355 times faster than naive.
+naive: 7743
+unrolled2: 6511
+unrolled4: 5021
+unrolled8: 4398
+unrolled2 is 1.1892182460451544 times faster than naive.
+unrolled4 is 1.542123083051185 times faster than naive.
+unrolled8 is 1.7605729877216916 times faster than naive.
 ```
 
 On the basis of this, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.

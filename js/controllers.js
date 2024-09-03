@@ -81,16 +81,18 @@ export class Controller {
 
   // Unrolled loop. See README for the naive, but more readable version and a discussion of performance.
   translate(axis, sign, distance) {
+    let k;
     const difference = -sign * distance;
     for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-      this.model.rects[8 * i][axis] += difference;
-      this.model.rects[8 * i + 1][axis] += difference;
-      this.model.rects[8 * i + 2][axis] += difference;
-      this.model.rects[8 * i + 3][axis] += difference;
-      this.model.rects[8 * i + 4][axis] += difference;
-      this.model.rects[8 * i + 5][axis] += difference;
-      this.model.rects[8 * i + 6][axis] += difference;
-      this.model.rects[8 * i + 7][axis] += difference;
+      k = 8 * i;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k++][axis] += difference;
+      this.model.rects[k][axis] += difference;
     }
     for (let i = 1; i <= this.model.rects.length % 8; i++) {
       this.model.rects[this.model.rects.length - i][axis] += difference;
@@ -125,23 +127,25 @@ export class Controller {
     this.model.spawnRect();
 
     // Unrolled loop. See README for a discussion of performance and for the naive version.
+    let k;
     for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-      this.zoom(this.model.rects[8 * i]);
-      this.zoom(this.model.rects[8 * i + 1]);
-      this.zoom(this.model.rects[8 * i + 2]);
-      this.zoom(this.model.rects[8 * i + 3]);
-      this.zoom(this.model.rects[8 * i + 4]);
-      this.zoom(this.model.rects[8 * i + 5]);
-      this.zoom(this.model.rects[8 * i + 6]);
-      this.zoom(this.model.rects[8 * i + 7]);
-      this.view.drawRect(this.model.rects[8 * i]);
-      this.view.drawRect(this.model.rects[8 * i + 1]);
-      this.view.drawRect(this.model.rects[8 * i + 2]);
-      this.view.drawRect(this.model.rects[8 * i + 3]);
-      this.view.drawRect(this.model.rects[8 * i + 4]);
-      this.view.drawRect(this.model.rects[8 * i + 5]);
-      this.view.drawRect(this.model.rects[8 * i + 6]);
-      this.view.drawRect(this.model.rects[8 * i + 7]);
+      k = 8 * i;
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.zoom(this.model.rects[k]);
+      this.view.drawRect(this.model.rects[k]);
     }
     for (let i = 1; i <= this.model.rects.length % 8; i++) {
       this.zoom(this.model.rects[this.model.rects.length - i]);

@@ -11,10 +11,12 @@ for (let i = 0; i < 256; i++) {
 }
 
 function unrolled2Translate(axis, sign, distance) {
+  let k;
   const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 2); i++) {
-    rects[2 * i][axis] += difference;
-    rects[2 * i + 1][axis] += difference;
+    k = 2 * i;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
   }
   for (let i = 1; i <= rects.length % 2; i++) {
     rects[rects.length - i][axis] += difference;
@@ -22,32 +24,36 @@ function unrolled2Translate(axis, sign, distance) {
 }
 
 function unrolled4Translate(axis, sign, distance) {
+  let k;
   const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 4); i++) {
-    rects[4 * i][axis] += difference;
-    rects[4 * i + 1][axis] += difference;
-    rects[4 * i + 2][axis] += difference;
-    rects[4 * i + 3][axis] += difference;
+    k = 4 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
   }
   for (let i = 1; i <= rects.length % 4; i++) {
     rects[rects.length - i][axis] += difference;
   }
 }
 
-function unrolled8Translate(axis, sign, distance) {
+function unrolled8translate(axis, sign, distance) {
+  let k;
   const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    rects[8 * i][axis] += sign * distance;
-    rects[8 * i + 1][axis] += difference;
-    rects[8 * i + 2][axis] += difference;
-    rects[8 * i + 3][axis] += difference;
-    rects[8 * i + 4][axis] += difference;
-    rects[8 * i + 5][axis] += difference;
-    rects[8 * i + 6][axis] += difference;
-    rects[8 * i + 7][axis] += difference;
+    k = 8 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
   }
-  for (let i = 0; i < rects.length % 8; i++) {
-    rects[rects.length - 1 - i][axis] += difference;
+  for (let i = 1; i <= rects.length % 8; i++) {
+    rects[rects.length - i][axis] += difference;
   }
 }
 
@@ -71,7 +77,7 @@ const unrolled4 = Date.now() - start;
 
 start = Date.now();
 for (let i = 0; i < 10_000_000; i++) {
-  unrolled8Translate("x", -1, 8);
+  unrolled8translate("x", -1, 8);
 }
 const unrolled8 = Date.now() - start;
 
