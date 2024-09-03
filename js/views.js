@@ -5,9 +5,9 @@ export class View {
 
   constructor() {
     this.canvas = document.getElementById("canvas");
-    this.sizeCanvas();
+    this.setCanvasSize(this.canvas, innerWidth, innerHeight);
     this.ctx = this.canvas.getContext("2d");
-    this.crossSize = 10;
+    this.crossSize = 10 * devicePixelRatio;
     addEventListener("resize", () => {
       location.reload();
     });
@@ -34,11 +34,11 @@ export class View {
   }
 
   // "For optimum image quality, you should not use the `width` and `height` attributes to set the on-screen size of the canvas. Instead, set the desired on-screen CSS pixel size of the canvas with CSS `width` and `height` style attributes. Then, before you begin drawing in your JavaScript code, set the `width` and `height` properties of the canvas object to the number of CSS pixels times devicePixelRatio." - David Flanagan: JavaScript the Definitive Guide, p. 489, Section 15.8.2.
-  sizeCanvas() {
-    this.canvas.style.width = `${innerWidth}px`;
-    this.canvas.style.height = `${innerHeight}px`;
-    this.canvas.width = innerWidth * devicePixelRatio;
-    this.canvas.height = innerHeight * devicePixelRatio;
+  setCanvasSize(canvas, width, height) {
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
   }
 
   clearCanvas() {
