@@ -27,7 +27,7 @@ export class Controller {
   }
 
   handleKeyup(keyCode) {
-    this.keysPressed.clear(keyCode);
+    this.keysPressed.delete(keyCode);
     switch (keyCode) {
       case "Tab":
       case "KeyQ":
@@ -51,9 +51,11 @@ export class Controller {
         this.translate("y", 1, this.model.omega);
         break;
       case "ArrowLeft":
+        // console.log("left");
         this.translate("x", -1, this.model.omega);
         break;
       case "ArrowRight":
+        // console.log("right");
         this.translate("x", 1, this.model.omega);
         break;
       case "KeyZ": {
