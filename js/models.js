@@ -38,32 +38,39 @@ class Rect {
   dob;
 
   constructor(midX, midY, start) {
-    {
-      const width = Math.random();
-      const height = Math.random();
-      const x = midX - width / 2;
-      const y = midY - height / 2;
-      let p = Math.random() * 255;
-      let q = Math.random() * 255;
-      let r;
-      const dob = Date.now();
-      r =
-        dob % 30000 < 10000
-          ? Math.round(Math.random()) * 255
-          : Math.random() * 255;
-      const color =
-        (dob - start) % 70000 < 60000
-          ? `rgb(${r} ${r} ${r})`
-          : `rgb(${p} ${q} ${r})`;
-      const type = Math.random() < 0.3 ? "fill" : "stroke";
+    const width = Math.random();
+    const height = Math.random();
+    const x = midX - width / 2;
+    const y = midY - height / 2;
+    let p = Math.random() * 255;
+    let q = Math.random() * 255;
+    let r;
+    const dob = Date.now();
+    r =
+      dob % 30000 < 10000
+        ? Math.round(Math.random()) * 255
+        : Math.random() * 255;
+    const color =
+      (dob - start) % 70000 < 60000
+        ? `rgb(${r} ${r} ${r})`
+        : `rgb(${p} ${q} ${r})`;
 
-      this.x = x;
-      this.y = y;
-      this.width = width;
-      this.height = height;
-      this.color = color;
-      this.type = type;
-      this.dob = dob;
-    }
+    const type =
+      Math.random() < this.getSlowCyclicalDecimal(47) ? "fill" : "stroke";
+
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+    this.type = type;
+    this.dob = dob;
+  }
+
+  getSlowCyclicalDecimal(duration) {
+    const seconds = Math.floor(Date.now() / 1000);
+    const unit = seconds % duration;
+    const decimal = unit / duration + 0.1;
+    return decimal;
   }
 }
