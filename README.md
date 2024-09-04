@@ -24,23 +24,21 @@ Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click t
 
 ## 3. Performance
 
-At present, I'm keeping track of active rectangles by pushing newly spawned ones to an array, then slicing it to remove old ones.
+At present, I'm storing active rectangles in an array. Each frame, I spawn a new rectangle, pushing it to the array. If the array then contains more than 255 rectangles, I shift it to remove the first.
 
 ```javascript
 this.model.spawnRect(); // this.rects.push(new Rect(this.midX, this.midY, this.start));
-for (let i = 0; i < this.model.rects.length; i++) {
-  const rect = this.model.rects[i];
-  this.zoom(rect);
-  this.view.drawRect(rect);
-}
+
+// ...
+
 if (this.model.rects.length > 255) {
-  this.model.rects = this.model.rects.slice(1);
+  this.model.rects.shift();
 }
 ```
 
-I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects, marked as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there isn't an inactive rectangle that can be reactivated. It seems any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
+I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects. I marked them as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there wasn't an inactive rectangle that could be reactivated. Apparently, any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
 
-On the other hand, unrolling loops to take advantage of instruction-level parallelism can improve performance. I learn this idea from Casey Muratori's course [Performance Aware Programming](https://www.computerenhance.com/p/table-of-contents). Run `node benchmarks/translate_benchmark.js` to compare the naive version of `controller.translate` with four other versions unrolled to execute, respectively, 2, 4, 8, and 16 lines per iteration.
+On the other hand, unrolling loops to take advantage of instruction-level parallelism did improve performance. I learn this idea from Casey Muratori's course [Performance Aware Programming](https://www.computerenhance.com/p/table-of-contents). Run `node benchmarks/translate_benchmark.js` to compare the naive version of `controller.translate` with four other versions unrolled to pack, respectively, 2, 4, 8, and 16 naive iterations into one.
 
 ```javascript
 translate(axis, sign, distance) { // naive
