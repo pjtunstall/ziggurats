@@ -9,8 +9,10 @@ export class Controller {
   time;
   count;
   frame;
+  lastTimestamp;
 
   constructor(model, view) {
+    this.lastTimestamp = 0;
     this.frame = 50 / 3;
     this.time = 0;
     this.count = 0;
@@ -128,9 +130,10 @@ export class Controller {
 
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
-    if (Date.now() - timestamp < this.frame) {
+    if (timestamp - this.lastTimestamp < this.frame) {
       return;
     }
+    this.lastTimestamp = timestamp;
 
     this.keysPressed.forEach((code) => {
       this.actOnKeydown(code);
