@@ -13,7 +13,7 @@ export class Controller {
     this.model = model;
     this.view = view;
     this.keysPressed = new Set();
-    this.setMidpointForModel();
+    this.setMidpoint();
     this.setCrossVariablesForView();
     this.view.addEventListener("keydown", (keyCode) =>
       this.handleKeydown(keyCode)
@@ -73,18 +73,17 @@ export class Controller {
   reset() {
     this.model = new Model();
     this.view = new View();
-    this.model.midX = (this.view.dpr * innerWidth) / 2;
-    this.model.midY = (this.view.dpr * innerHeight) / 2;
+    this.setMidpoint();
   }
 
-  setMidpointForModel() {
+  setMidpoint() {
     this.model.midX = (this.view.dpr * innerWidth) / 2;
     this.model.midY = (this.view.dpr * innerHeight) / 2;
+    this.view.midX = this.model.midX;
+    this.view.midY = this.model.midY;
   }
 
   setCrossVariablesForView() {
-    this.view.midX = this.model.midX;
-    this.view.midY = this.model.midY;
     this.view.targetXOfStaticImage = this.view.midX - this.view.crossSize / 2;
     this.view.targetYOfStaticImage =
       this.view.midY - this.view.targetXOfStaticImage;
@@ -194,7 +193,7 @@ export class Controller {
     }
 
     if (this.model.rects.length > 255) {
-      this.model.rects = this.model.rects.slice(1);
+      this.model.rects.shift();
     }
 
     this.view.copyCrosshairs();
