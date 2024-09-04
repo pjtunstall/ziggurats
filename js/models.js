@@ -55,8 +55,7 @@ class Rect {
         ? `rgb(${r} ${r} ${r})`
         : `rgb(${p} ${q} ${r})`;
 
-    const type =
-      Math.random() < this.getSlowCyclicalDecimal(47) ? "fill" : "stroke";
+    const type = Math.random() < 0.3 ? "fill" : "stroke";
 
     this.x = x;
     this.y = y;
@@ -65,12 +64,5 @@ class Rect {
     this.color = color;
     this.type = type;
     this.dob = dob;
-  }
-
-  getSlowCyclicalDecimal(duration) {
-    const seconds = Math.floor(Date.now() / 1000);
-    const unit = seconds % duration;
-    const decimal = unit / duration + 0.1;
-    return decimal;
   }
 }
