@@ -81,7 +81,16 @@ export class Controller {
     this.roll(this.model.theta, this.model.midX, this.model.midY);
   }
 
-  // Unrolled loop. See README for the naive, but more readable version and a discussion of performance.
+  // Unrolled loop for better performance. See README. For the sake of clarity, here is the naive version:
+  /*
+
+  translate(axis, sign, distance) { // naive
+    for (const rect of this.model.rects) {
+      rect[axis] -= sign * distance;
+    }
+  }
+
+  */
   translate(axis, sign, distance) {
     let k;
     const difference = -sign * distance;
@@ -131,7 +140,16 @@ export class Controller {
 
     this.model.spawnRect();
 
-    // Unrolled loop. See README for a discussion of performance and for the naive version.
+    // Unrolled loop for better performance. See README. For the sake of clarity, here is the naive version:
+    /*
+
+    for (let i = 0; i < this.model.rects.length; i++) {
+      const rect = this.model.rects[i];
+      this.zoom(rect);
+      this.view.drawRect(rect);
+    }
+
+    */
     let k;
     for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
       k = 8 * i;
