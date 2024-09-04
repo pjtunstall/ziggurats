@@ -8,8 +8,6 @@ export class View {
     this.dpr = devicePixelRatio;
     this.canvas = document.getElementById("canvas");
     this.setCanvasSize(this.canvas, innerWidth, innerHeight);
-    // this.canvas.style.position = "absolute";
-    // this.canvas.style.top = (innerHeight - innerWidth) / 2;
     this.ctx = this.canvas.getContext("2d");
     this.crossSize = 16 * this.dpr;
     this.drawCrosshairs(

@@ -6,12 +6,10 @@ export class Controller {
   view;
   keysPressed;
   loopId;
-  count;
   lastTimestamp;
 
   constructor(model, view) {
     this.lastTimestamp = 0;
-    this.count = 0;
     this.model = model;
     this.view = view;
     this.keysPressed = new Set();
