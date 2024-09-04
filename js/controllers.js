@@ -181,7 +181,7 @@ export class Controller {
       this.model.rects = this.model.rects.slice(1);
     }
 
-    this.view.drawCrosshairs(this.model.midX, this.model.midY);
+    this.view.copyCrosshairs();
   }
 
   startLoop() {

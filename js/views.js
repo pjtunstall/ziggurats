@@ -8,6 +8,7 @@ export class View {
     this.setCanvasSize(this.canvas, innerWidth, innerHeight);
     this.ctx = this.canvas.getContext("2d");
     this.crossSize = 16 * devicePixelRatio;
+    this.drawCrosshairs();
     addEventListener("resize", () => {
       location.reload();
     });
@@ -57,22 +58,29 @@ export class View {
     }
   }
 
-  drawCrosshairs(x, y) {
-    this.ctx.save();
+  copyCrosshairs() {
+    this.ctx.drawImage(this.staticCanvas, 0, 0, innerWidth, innerHeight);
+  }
 
-    this.ctx.strokeStyle = "red";
+  drawCrosshairs() {
+    this.staticCanvas = document.createElement("canvas");
+    this.setCanvasSize(this.staticCanvas, innerWidth, innerHeight);
+    const ctx = this.staticCanvas.getContext("2d");
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(x, y - this.crossSize / 2);
-    this.ctx.lineTo(x, y + this.crossSize / 2);
-    this.ctx.stroke();
+    const x = innerWidth / 2;
+    const y = innerHeight / 2;
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(x - this.crossSize / 2, y);
-    this.ctx.lineTo(x + this.crossSize / 2, y);
-    this.ctx.stroke();
+    ctx.strokeStyle = "red";
 
-    this.ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(x, y - this.crossSize / 2);
+    ctx.lineTo(x, y + this.crossSize / 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x - this.crossSize / 2, y);
+    ctx.lineTo(x + this.crossSize / 2, y);
+    ctx.stroke();
   }
 
   roll(theta, x, y) {
