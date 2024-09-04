@@ -95,9 +95,20 @@ for (let i = 0; i < this.model.rects.length; i++) {
 }
 ```
 
+Another surprise was that, according to the FPS display in Chrome, setting `controller.frame = 50 / 3` and, in `controller.loop` running
+
+```javascript
+if (timestamp - this.lastTimestamp < this.frame) {
+  return;
+}
+this.lastTimestamp = timestamp;
+```
+
+performed much worse than setting `controller.frame = 16` or just comparing the elapsed time to 16 itself. On further experimentation, it seems that there's no problem with lower numbers, but other, higher values (including much higher values), for which the condition is likely to often evaluate to true, had a similarly drastic effect on the FPS display without any noticeable jank, which makes me wonder if this is just some artifact of the way Chrome measures it.
+
 ## 4. Questions
 
-In my inetrpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I'm curious as to what difference this might make, and the pros and cons of each design: central controller or linear flow.
+In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I'm curious as to what difference this might make, and the pros and cons of each design: central controller or linear flow.
 
 My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way.
 

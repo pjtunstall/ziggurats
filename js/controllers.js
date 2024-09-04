@@ -6,24 +6,23 @@ export class Controller {
   view;
   keysPressed;
   loopId;
-  time;
   count;
-  frame;
   lastTimestamp;
 
   constructor(model, view) {
     this.lastTimestamp = 0;
-    this.frame = 50 / 3;
-    this.time = 0;
     this.count = 0;
     this.model = model;
     this.view = view;
     this.keysPressed = new Set();
+    this.model.midX = (this.view.dpr * innerWidth) / 2;
+    this.model.midY = (this.view.dpr * innerHeight) / 2;
     this.view.addEventListener("keydown", (keyCode) =>
       this.handleKeydown(keyCode)
     );
     this.view.addEventListener("keyup", (keyCode) => this.handleKeyup(keyCode));
     this.view.addEventListener("click", (x, y) => this.handleClick(x, y));
+    this.view.addEventListener("resize", () => this.reset());
   }
 
   handleKeydown(keyCode) {
@@ -68,10 +67,16 @@ export class Controller {
         this.roll(Math.PI / 64);
         break;
       case "Space":
-        this.model = new Model();
-        this.view = new View();
+        this.reset();
         break;
     }
+  }
+
+  reset() {
+    this.model = new Model();
+    this.view = new View();
+    this.model.midX = (this.view.dpr * innerWidth) / 2;
+    this.model.midY = (this.view.dpr * innerHeight) / 2;
   }
 
   handleClick(x, y) {
@@ -130,7 +135,7 @@ export class Controller {
 
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
-    if (timestamp - this.lastTimestamp < this.frame) {
+    if (timestamp - this.lastTimestamp < 16) {
       return;
     }
     this.lastTimestamp = timestamp;

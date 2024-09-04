@@ -2,21 +2,27 @@ export class View {
   canvas;
   ctx;
   crossSize;
+  dpr;
 
   constructor() {
+    this.dpr = devicePixelRatio;
     this.canvas = document.getElementById("canvas");
     this.setCanvasSize(this.canvas, innerWidth, innerHeight);
+    // this.canvas.style.position = "absolute";
+    // this.canvas.style.top = (innerHeight - innerWidth) / 2;
     this.ctx = this.canvas.getContext("2d");
-    this.crossSize = 16 * devicePixelRatio;
-    this.drawCrosshairs();
-    addEventListener("resize", () => {
-      location.reload();
-    });
+    this.crossSize = 16 * this.dpr;
+    this.drawCrosshairs(
+      (this.dpr * innerWidth) / 2,
+      (this.dpr * innerHeight) / 2
+    );
   }
 
   addEventListener(eventType, handler) {
     addEventListener(eventType, (event) => {
       switch (eventType) {
+        case "resize":
+          handler();
         case "keydown":
           if (event.code === "Tab") {
             event.preventDefault();
@@ -38,8 +44,8 @@ export class View {
   setCanvasSize(canvas, width, height) {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
-    canvas.width = width * devicePixelRatio;
-    canvas.height = height * devicePixelRatio;
+    canvas.width = width * this.dpr;
+    canvas.height = height * this.dpr;
   }
 
   clearCanvas() {
@@ -59,16 +65,13 @@ export class View {
   }
 
   copyCrosshairs() {
-    this.ctx.drawImage(this.staticCanvas, 0, 0, innerWidth, innerHeight);
+    this.ctx.drawImage(this.staticCanvas, 0, 0, innerWidth, innerWidth);
   }
 
-  drawCrosshairs() {
+  drawCrosshairs(x, y) {
     this.staticCanvas = document.createElement("canvas");
-    this.setCanvasSize(this.staticCanvas, innerWidth, innerHeight);
+    this.setCanvasSize(this.staticCanvas, innerWidth, innerWidth);
     const ctx = this.staticCanvas.getContext("2d");
-
-    const x = innerWidth / 2;
-    const y = innerHeight / 2;
 
     ctx.strokeStyle = "red";
 
