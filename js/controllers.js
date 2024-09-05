@@ -32,7 +32,10 @@ export class Controller {
     switch (keyCode) {
       case "Tab":
       case "KeyQ":
-        this.model.speed = this.model.normal;
+        this.view.worker.postMessage({
+          type: "speed",
+          speed: this.model.normal,
+        });
     }
   }
 
@@ -40,45 +43,57 @@ export class Controller {
   actOnKeydown(keyCode) {
     switch (keyCode) {
       case "Tab":
-        this.model.speed = this.model.slow;
-        break;
+        this.view.worker.postMessage({ type: "speed", speed: this.model.slow });
+        return;
       case "KeyQ":
-        this.model.speed = this.model.fast;
-        break;
+        this.view.worker.postMessage({ type: "speed", speed: this.model.fast });
+        return;
       case "ArrowUp":
-        this.translate("y", -1, this.model.omega);
-        break;
+        this.view.worker.postMessage({
+          type: "translate",
+          axis: "y",
+          sign: -1,
+          distance: this.model.omega,
+        });
+        return;
       case "ArrowDown":
-        this.translate("y", 1, this.model.omega);
-        break;
+        this.view.worker.postMessage({
+          type: "translate",
+          axis: "y",
+          sign: 1,
+          distance: this.model.omega,
+        });
+        return;
       case "ArrowLeft":
-        this.translate("x", -1, this.model.omega);
-        break;
+        this.view.worker.postMessage({
+          type: "translate",
+          axis: "x",
+          sign: -1,
+          distance: this.model.omega,
+        });
+        return;
       case "ArrowRight":
-        this.translate("x", 1, this.model.omega);
-        break;
+        this.view.worker.postMessage({
+          type: "translate",
+          axis: "x",
+          sign: 1,
+          distance: this.model.omega,
+        });
+        return;
       case "KeyZ": {
         this.view.worker.postMessage({ type: "roll", clockwise: false });
         return;
-        const delta = -Math.PI / 64;
-        this.model.theta += delta;
-        this.view.roll(delta);
-        break;
       }
       case "KeyX":
         this.view.worker.postMessage({ type: "roll", clockwise: true });
         return;
-        const delta = Math.PI / 64;
-        this.model.theta += delta;
-        this.view.roll(delta);
-        break;
       case "Space":
         this.reset();
-        break;
     }
   }
 
   reset() {
+    this.view.worker.terminate();
     this.model = new Model();
     this.view = new View();
     this.setMidpoint();
@@ -98,32 +113,7 @@ export class Controller {
   }
 
   handleClick(x, y) {
-    this.view.roll(-this.model.theta);
-    const deltaX = x - this.model.midX;
-    const deltaY = y - this.model.midY;
-    this.translate("x", 1, -deltaX);
-    this.translate("y", 1, -deltaY);
-    this.view.roll(this.model.theta);
-  }
-
-  // Unrolled loop for better performance. See README.
-  translate(axis, sign, distance) {
-    let k;
-    const difference = -sign * distance;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-      k = 8 * i;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k][axis] += difference;
-    }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.model.rects[this.model.rects.length - i][axis] += difference;
-    }
+    this.view.worker.postMessage({ type: "click", x, y });
   }
 
   zoom(rect) {
@@ -159,40 +149,14 @@ export class Controller {
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
 
-    // this.view.clearCanvas();
-    // this.drawRects();
-    // this.view.copyCrosshairs();
-
-    // if (timestamp - this.lastTimestamp < 16) {
-    //   return;
-    // }
-    // this.lastTimestamp = timestamp;
+    if (timestamp - this.lastTimestamp < 16) {
+      return;
+    }
+    this.lastTimestamp = timestamp;
 
     this.keysPressed.forEach((code) => {
       this.actOnKeydown(code);
     });
-
-    // this.model.spawnRect();
-
-    // let k;
-    // for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-    //   k = 8 * i;
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k++]);
-    //   this.zoom(this.model.rects[k]);
-    // }
-    // for (let i = 1; i <= this.model.rects.length % 8; i++) {
-    //   this.zoom(this.model.rects[this.model.rects.length - i]);
-    // }
-
-    // if (this.model.rects.length > 255) {
-    //   this.model.rects.shift();
-    // }
   }
 
   startLoop() {

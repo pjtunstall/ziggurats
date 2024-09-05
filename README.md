@@ -22,8 +22,6 @@ Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click t
 
 ## 3. Performance
 
-And degree of roll, even if left unchanging, has an adverse effect on performance. I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.
-
 At present, I'm storing active rectangles in an array. Each frame, I spawn a new rectangle, pushing it to the array. If the array then contains more than 255 rectangles, I shift it to remove the first.
 
 ```javascript
@@ -83,7 +81,7 @@ unrolled8 is 1.3031632417455552 times faster than naive.
 unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a spare buffer for drawing.
+On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops so that logic updates could be separated from rendering.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
@@ -107,6 +105,8 @@ performed much worse than setting `controller.frame = 16` or just comparing the 
 There seemed to be no problem with lower numbers. Higher values (including much higher values), for which the condition is likely to often evaluate to true, had a similarly drastic effect on the FPS display without any noticeable jank.
 
 My theory now is that this is due to how Chrome measures frame drops. If the animation doesn't happen as scheduled by `requestAnimationFrame`, I'm guessing that counts as a frame drop. I didn't notice such a phenomenon in our space invaders game, and there it was only the logic update that was being skipped; the rendering was always allowed. Indeed, on the present project, when I separated logic from rendering and made sure to never skip the rendering, Chrome's "frame rendering stats" were happy.
+
+Before adding a a worker thread for double buffering, I was finding that degree of roll, even if left unchanging, had an adverse effect on performance. (I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.) Since adding the worker, degree of roll no longer had a noticeable effect for me under normal conditions.
 
 ## 4. Questions
 

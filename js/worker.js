@@ -7,6 +7,8 @@ let lastTimestamp = 0;
 let start = Date.now();
 let loopId;
 let speed = 0.05;
+let omega = 4;
+let theta = 0;
 
 onmessage = function (e) {
   switch (e.data.type) {
@@ -21,13 +23,47 @@ onmessage = function (e) {
     case "roll":
       roll(e.data.clockwise);
       break;
+    case "translate":
+      translate(e.data.axis, e.data.sign, e.data.distance);
+      break;
+    case "speed":
+      speed = e.data.speed;
+      break;
+    case "click":
+      roll(-theta);
+      const deltaX = e.data.x - midX;
+      const deltaY = e.data.y - midY;
+      this.translate("x", 1, -deltaX);
+      this.translate("y", 1, -deltaY);
+      roll(theta);
+      break;
   }
 };
+
+function translate(axis, sign, distance) {
+  let k;
+  const difference = -sign * distance;
+  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
+    k = 8 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k][axis] += difference;
+  }
+  for (let i = 1; i <= rects.length % 8; i++) {
+    rects[rects.length - i][axis] += difference;
+  }
+}
 
 function roll(clockwise) {
   const delta = clockwise ? Math.PI / 64 : -Math.PI / 64;
   ctx.translate(midX, midY);
   ctx.rotate(delta);
+  theta += delta;
   ctx.translate(-midX, -midY);
 }
 
@@ -113,9 +149,12 @@ function drawRects() {
 
 function loop(timestamp) {
   requestAnimationFrame(loop);
+
   drawRects();
 
   if (timestamp - lastTimestamp < 16) {
+    const bitmap = offscreen.transferToImageBitmap();
+    postMessage(bitmap);
     return;
   }
   lastTimestamp = timestamp;
