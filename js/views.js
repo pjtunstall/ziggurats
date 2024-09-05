@@ -7,14 +7,19 @@ export class View {
   midY;
   targetXOfStaticImage;
   targetYOfStaticImage;
+  drawingCanvas;
+  drawingCtx;
 
   constructor() {
     this.dpr = devicePixelRatio;
     this.crossSize = 16 * this.dpr;
     this.canvas = document.getElementById("canvas");
-    this.setCanvasSize(this.canvas, innerWidth, innerHeight);
+    this.setCanvasSize(this.canvas, innerWidth, innerWidth);
     this.ctx = this.canvas.getContext("2d");
     this.drawCrosshairs();
+    this.drawingCanvas = document.createElement("canvas");
+    this.setCanvasSize(this.drawingCanvas, innerWidth, innerWidth);
+    this.drawingCtx = this.drawingCanvas.getContext("2d");
   }
 
   addEventListener(eventType, handler) {
@@ -49,18 +54,34 @@ export class View {
 
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.drawingCtx.clearRect(
+      0,
+      0,
+      this.drawingCanvas.width,
+      this.drawingCanvas.height
+    );
   }
 
   drawRect(rect) {
     switch (rect.type) {
       case "fill":
-        this.ctx.fillStyle = rect.color;
-        this.ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        this.drawingCtx.fillStyle = rect.color;
+        this.drawingCtx.fillRect(rect.x, rect.y, rect.width, rect.height);
         break;
       case "stroke":
-        this.ctx.strokeStyle = rect.color;
-        this.ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        this.drawingCtx.strokeStyle = rect.color;
+        this.drawingCtx.strokeRect(rect.x, rect.y, rect.width, rect.height);
     }
+  }
+
+  copyRects() {
+    this.ctx.drawImage(
+      this.drawingCanvas,
+      0,
+      0,
+      this.drawingCanvas.width,
+      this.drawingCanvas.height
+    );
   }
 
   copyCrosshairs() {
@@ -93,9 +114,11 @@ export class View {
     ctx.stroke();
   }
 
-  roll(theta, x, y) {
-    this.ctx.translate(x, y);
-    this.ctx.rotate(theta);
-    this.ctx.translate(-x, -y);
+  roll(delta) {
+    const x = this.midX;
+    const y = this.midY;
+    this.drawingCtx.translate(x, y);
+    this.drawingCtx.rotate(delta);
+    this.drawingCtx.translate(-x, -y);
   }
 }

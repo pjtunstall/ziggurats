@@ -83,7 +83,7 @@ unrolled8 is 1.3031632417455552 times faster than naive.
 unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one.
+On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a buffer for drawing.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
@@ -93,7 +93,7 @@ for (let i = 0; i < this.model.rects.length; i++) {
 }
 ```
 
-Another surprise was that, according to the FPS display in Chrome, setting `controller.frame = 50 / 3` and, in `controller.loop` running
+Another thing that initially suprised me: according to the frame-rate display in Chrome (frame rendering stats), setting `controller.frame = 50 / 3` and, in `controller.loop` running
 
 ```javascript
 if (timestamp - this.lastTimestamp < this.frame) {
@@ -102,7 +102,11 @@ if (timestamp - this.lastTimestamp < this.frame) {
 this.lastTimestamp = timestamp;
 ```
 
-performed much worse than setting `controller.frame = 16` or just comparing the elapsed time to 16 itself. On further experimentation, it seems that there's no problem with lower numbers, but other, higher values (including much higher values), for which the condition is likely to often evaluate to true, had a similarly drastic effect on the FPS display without any noticeable jank, which makes me wonder if this is just some artifact of the way Chrome measures it.
+performed much worse than setting `controller.frame = 16` or just comparing the elapsed time to 16 itself. The reason for such a condition is to give all users the same logical update speed even if their computer can perform animations with a frame rate greater than 60Hz.
+
+There seemed to be no problem with lower numbers. Higher values (including much higher values), for which the condition is likely to often evaluate to true, had a similarly drastic effect on the FPS display without any noticeable jank.
+
+My theory now is that this is due to how Chrome measures frame drops. If the animation doesn't happen as scheduled by `requestAnimationFrame`, I'm guessing that counts as a frame drop. I didn't notice such a phenomenon in our space invaders game, and there it was only the logic update that was being skipped; the rendering was always allowed. Indeed, on the present project, when I separated logic from rendering and made sure to never skip the rendering, Chrome's "frame rendering stats" were happy.
 
 ## 4. Questions
 

@@ -58,11 +58,15 @@ export class Controller {
         this.translate("x", 1, this.model.omega);
         break;
       case "KeyZ": {
-        this.roll(-Math.PI / 64);
+        const delta = -Math.PI / 64;
+        this.model.theta += delta;
+        this.view.roll(delta);
         break;
       }
       case "KeyX":
-        this.roll(Math.PI / 64);
+        const delta = Math.PI / 64;
+        this.model.theta += delta;
+        this.view.roll(delta);
         break;
       case "Space":
         this.reset();
@@ -90,24 +94,15 @@ export class Controller {
   }
 
   handleClick(x, y) {
-    this.roll(-this.model.theta, this.model.midX, this.model.midY);
+    this.view.roll(-this.model.theta);
     const deltaX = x - this.model.midX;
     const deltaY = y - this.model.midY;
     this.translate("x", 1, -deltaX);
     this.translate("y", 1, -deltaY);
-    this.roll(this.model.theta, this.model.midX, this.model.midY);
+    this.view.roll(this.model.theta);
   }
 
-  // Unrolled loop for better performance. See README. For the sake of clarity, here is the naive version:
-  /*
-
-  translate(axis, sign, distance) { // naive
-    for (const rect of this.model.rects) {
-      rect[axis] -= sign * distance;
-    }
-  }
-
-  */
+  // Unrolled loop for better performance. See README.
   translate(axis, sign, distance) {
     let k;
     const difference = -sign * distance;
@@ -127,11 +122,6 @@ export class Controller {
     }
   }
 
-  roll(deltaRoll) {
-    this.view.roll(deltaRoll, this.model.midX, this.model.midY);
-    this.model.theta += deltaRoll;
-  }
-
   zoom(rect) {
     const widthIncrease = rect.width * this.model.speed;
     const heightIncrease = rect.height * this.model.speed;
@@ -143,8 +133,32 @@ export class Controller {
     rect.y -= heightIncrease / 2;
   }
 
+  drawRects() {
+    let k;
+    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
+      k = 8 * i;
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k++]);
+      this.view.drawRect(this.model.rects[k]);
+    }
+    for (let i = 1; i <= this.model.rects.length % 8; i++) {
+      this.view.drawRect(this.model.rects[this.model.rects.length - i]);
+    }
+    this.view.copyRects();
+  }
+
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
+
+    this.view.clearCanvas();
+    this.drawRects();
+    this.view.copyCrosshairs();
+
     if (timestamp - this.lastTimestamp < 16) {
       return;
     }
@@ -154,39 +168,19 @@ export class Controller {
       this.actOnKeydown(code);
     });
 
-    this.view.clearCanvas();
-
     this.model.spawnRect();
 
-    // Unrolled loop for better performance. See README. For the sake of clarity, here is the naive version:
-    /*
-
-    for (let i = 0; i < this.model.rects.length; i++) {
-      const rect = this.model.rects[i];
-      this.zoom(rect);
-      this.view.drawRect(rect);
-    }
-
-    */
     let k;
     for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
       k = 8 * i;
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
+      this.zoom(this.model.rects[k++]);
       this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-      this.view.drawRect(this.model.rects[k]);
     }
     for (let i = 1; i <= this.model.rects.length % 8; i++) {
       this.zoom(this.model.rects[this.model.rects.length - i]);
@@ -195,8 +189,6 @@ export class Controller {
     if (this.model.rects.length > 255) {
       this.model.rects.shift();
     }
-
-    this.view.copyCrosshairs();
   }
 
   startLoop() {
