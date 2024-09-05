@@ -16,8 +16,6 @@
 
 It's first attempt at writing something in the MVC style. I have a class called Model, one called View, and one called Controller. Controller imports Model and View, and calls their methods. `index.js` instantiates each, and calls the `startLoop` method of the Controller to set everything in motion. I was inspired by the [TodoMVC](https://todomvc.com/) ES6 example. My aim with the exercise was to immitate the style to understand it better.
 
-It's got me excited to explore Canvas further. In particular, I'd like to try using an offscreen canvas as a buffer, to experiment with separate canvases for dynamic and static elements, and to compare the performance of a single threaded approach with offloading the drawing and calculations to one or more worker threads.
-
 ## 2. Instructions
 
 Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click to spawn rectangles from an arbitrary point. Space to reset.
@@ -85,7 +83,7 @@ unrolled8 is 1.3031632417455552 times faster than naive.
 unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a buffer for drawing.
+On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a spare buffer for drawing.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
