@@ -58,12 +58,16 @@ export class Controller {
         this.translate("x", 1, this.model.omega);
         break;
       case "KeyZ": {
+        this.view.worker.postMessage({ type: "roll", clockwise: false });
+        return;
         const delta = -Math.PI / 64;
         this.model.theta += delta;
         this.view.roll(delta);
         break;
       }
       case "KeyX":
+        this.view.worker.postMessage({ type: "roll", clockwise: true });
+        return;
         const delta = Math.PI / 64;
         this.model.theta += delta;
         this.view.roll(delta);
@@ -155,40 +159,40 @@ export class Controller {
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
 
-    this.view.clearCanvas();
-    this.drawRects();
-    this.view.copyCrosshairs();
+    // this.view.clearCanvas();
+    // this.drawRects();
+    // this.view.copyCrosshairs();
 
-    if (timestamp - this.lastTimestamp < 16) {
-      return;
-    }
-    this.lastTimestamp = timestamp;
+    // if (timestamp - this.lastTimestamp < 16) {
+    //   return;
+    // }
+    // this.lastTimestamp = timestamp;
 
     this.keysPressed.forEach((code) => {
       this.actOnKeydown(code);
     });
 
-    this.model.spawnRect();
+    // this.model.spawnRect();
 
-    let k;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-      k = 8 * i;
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
-    }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.zoom(this.model.rects[this.model.rects.length - i]);
-    }
+    // let k;
+    // for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
+    //   k = 8 * i;
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k++]);
+    //   this.zoom(this.model.rects[k]);
+    // }
+    // for (let i = 1; i <= this.model.rects.length % 8; i++) {
+    //   this.zoom(this.model.rects[this.model.rects.length - i]);
+    // }
 
-    if (this.model.rects.length > 255) {
-      this.model.rects.shift();
-    }
+    // if (this.model.rects.length > 255) {
+    //   this.model.rects.shift();
+    // }
   }
 
   startLoop() {

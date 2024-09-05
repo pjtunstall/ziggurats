@@ -14,12 +14,20 @@ export class View {
     this.dpr = devicePixelRatio;
     this.crossSize = 16 * this.dpr;
     this.canvas = document.getElementById("canvas");
-    this.setCanvasSize(this.canvas, innerWidth, innerWidth);
+    this.setCanvasSize(this.canvas, innerWidth, innerHeight);
     this.ctx = this.canvas.getContext("2d");
     this.drawCrosshairs();
     this.drawingCanvas = document.createElement("canvas");
     this.setCanvasSize(this.drawingCanvas, innerWidth, innerWidth);
     this.drawingCtx = this.drawingCanvas.getContext("2d");
+    this.offscreen = new OffscreenCanvas(canvas.width, canvas.height);
+    this.worker = new Worker("js/worker.js");
+    this.worker.postMessage({ type: "init", canvas: this.offscreen }, [
+      this.offscreen,
+    ]);
+    this.worker.onmessage = (e) => {
+      this.ctx.drawImage(e.data, 0, 0, this.canvas.width, this.canvas.height);
+    };
   }
 
   addEventListener(eventType, handler) {
