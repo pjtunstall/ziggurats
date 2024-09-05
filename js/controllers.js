@@ -116,36 +116,6 @@ export class Controller {
     this.view.worker.postMessage({ type: "click", x, y });
   }
 
-  zoom(rect) {
-    const widthIncrease = rect.width * this.model.speed;
-    const heightIncrease = rect.height * this.model.speed;
-
-    rect.width += widthIncrease;
-    rect.height += heightIncrease;
-
-    rect.x -= widthIncrease / 2;
-    rect.y -= heightIncrease / 2;
-  }
-
-  drawRects() {
-    let k;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
-      k = 8 * i;
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k]);
-    }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.view.drawRect(this.model.rects[this.model.rects.length - i]);
-    }
-    this.view.copyRects();
-  }
-
   loop(timestamp) {
     requestAnimationFrame((timestamp) => this.loop(timestamp));
 

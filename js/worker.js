@@ -21,7 +21,8 @@ onmessage = function (e) {
       loopId = requestAnimationFrame(loop);
       break;
     case "roll":
-      roll(e.data.clockwise);
+      const delta = e.data.clockwise ? Math.PI / 64 : -Math.PI / 64;
+      roll(delta);
       break;
     case "translate":
       translate(e.data.axis, e.data.sign, e.data.distance);
@@ -33,8 +34,8 @@ onmessage = function (e) {
       roll(-theta);
       const deltaX = e.data.x - midX;
       const deltaY = e.data.y - midY;
-      this.translate("x", 1, -deltaX);
-      this.translate("y", 1, -deltaY);
+      translate("x", 1, -deltaX);
+      translate("y", 1, -deltaY);
       roll(theta);
       break;
   }
@@ -59,8 +60,7 @@ function translate(axis, sign, distance) {
   }
 }
 
-function roll(clockwise) {
-  const delta = clockwise ? Math.PI / 64 : -Math.PI / 64;
+function roll(delta) {
   ctx.translate(midX, midY);
   ctx.rotate(delta);
   theta += delta;
