@@ -24,6 +24,8 @@ Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click t
 
 ## 3. Performance
 
+And degree of roll, even if left unchanging, has an adverse effect on performance. I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.
+
 At present, I'm storing active rectangles in an array. Each frame, I spawn a new rectangle, pushing it to the array. If the array then contains more than 255 rectangles, I shift it to remove the first.
 
 ```javascript
