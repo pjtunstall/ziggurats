@@ -106,19 +106,33 @@ export class Controller {
   translate(axis, sign, distance) {
     let k;
     const difference = -sign * distance;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
+    for (let i = 0; i < Math.floor(this.model.rects[0].length / 8); i++) {
       k = 8 * i;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k++][axis] += difference;
-      this.model.rects[k][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k++][axis] += difference;
+      this.model.rects[0][k][axis] += difference;
     }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.model.rects[this.model.rects.length - i][axis] += difference;
+    for (let i = 1; i <= this.model.rects[0].length % 8; i++) {
+      this.model.rects[0][this.model.rects[0].length - i][axis] += difference;
+    }
+    for (let i = 0; i < Math.floor(this.model.rects[1].length / 8); i++) {
+      k = 8 * i;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k++][axis] += difference;
+      this.model.rects[1][k][axis] += difference;
+    }
+    for (let i = 1; i <= this.model.rects[1].length % 8; i++) {
+      this.model.rects[1][this.model.rects[1].length - i][axis] += difference;
     }
   }
 
@@ -135,19 +149,33 @@ export class Controller {
 
   drawRects() {
     let k;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
+    for (let i = 0; i < Math.floor(this.model.rects[0].length / 8); i++) {
       k = 8 * i;
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k++]);
-      this.view.drawRect(this.model.rects[k]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k++]);
+      this.view.fillRect(this.model.rects[0][k]);
     }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.view.drawRect(this.model.rects[this.model.rects.length - i]);
+    for (let i = 1; i <= this.model.rects[0].length % 8; i++) {
+      this.view.fillRect(this.model.rects[0][this.model.rects[0].length - i]);
+    }
+    for (let i = 0; i < Math.floor(this.model.rects[1].length / 8); i++) {
+      k = 8 * i;
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k++]);
+      this.view.strokeRect(this.model.rects[1][k]);
+    }
+    for (let i = 1; i <= this.model.rects[1].length % 8; i++) {
+      this.view.strokeRect(this.model.rects[1][this.model.rects[1].length - i]);
     }
     this.view.copyRects();
   }
@@ -171,23 +199,40 @@ export class Controller {
     this.model.spawnRect();
 
     let k;
-    for (let i = 0; i < Math.floor(this.model.rects.length / 8); i++) {
+    for (let i = 0; i < Math.floor(this.model.rects[0].length / 8); i++) {
       k = 8 * i;
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k++]);
-      this.zoom(this.model.rects[k]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k++]);
+      this.zoom(this.model.rects[0][k]);
     }
-    for (let i = 1; i <= this.model.rects.length % 8; i++) {
-      this.zoom(this.model.rects[this.model.rects.length - i]);
+    for (let i = 1; i <= this.model.rects[0].length % 8; i++) {
+      this.zoom(this.model.rects[0][this.model.rects[0].length - i]);
+    }
+    for (let i = 0; i < Math.floor(this.model.rects[0].length / 8); i++) {
+      k = 8 * i;
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k++]);
+      this.zoom(this.model.rects[1][k]);
+    }
+    for (let i = 1; i <= this.model.rects[1].length % 8; i++) {
+      this.zoom(this.model.rects[1][this.model.rects[1].length - i]);
     }
 
-    if (this.model.rects.length > 255) {
-      this.model.rects.shift();
+    if (this.model.rects[0].length > 85) {
+      this.model.rects[0].shift();
+    }
+    if (this.model.rects[1].length > 170) {
+      this.model.rects[1].shift();
     }
   }
 

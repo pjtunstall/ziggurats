@@ -62,16 +62,14 @@ export class View {
     );
   }
 
-  drawRect(rect) {
-    switch (rect.type) {
-      case "fill":
-        this.drawingCtx.fillStyle = rect.color;
-        this.drawingCtx.fillRect(rect.x, rect.y, rect.width, rect.height);
-        break;
-      case "stroke":
-        this.drawingCtx.strokeStyle = rect.color;
-        this.drawingCtx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-    }
+  fillRect(rect) {
+    this.drawingCtx.fillStyle = rect.color;
+    this.drawingCtx.fillRect(rect.x, rect.y, rect.width, rect.height);
+  }
+
+  strokeRect(rect) {
+    this.drawingCtx.strokeStyle = rect.color;
+    this.drawingCtx.strokeRect(rect.x, rect.y, rect.width, rect.height);
   }
 
   copyRects() {

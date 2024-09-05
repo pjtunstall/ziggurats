@@ -18,11 +18,17 @@ export class Model {
     this.omega = 4;
     this.theta = 0;
     this.start = Date.now();
-    this.rects = [];
+    this.rects = [[], []];
   }
 
   spawnRect() {
-    this.rects.push(new Rect(this.midX, this.midY, this.start));
+    if (Math.random() < 0.3) {
+      // fill
+      this.rects[0].push(new Rect(this.midX, this.midY, this.start));
+    } else {
+      // stroke
+      this.rects[1].push(new Rect(this.midX, this.midY, this.start));
+    }
   }
 }
 
@@ -32,7 +38,6 @@ class Rect {
   width;
   height;
   color;
-  type;
   dob;
 
   constructor(midX, midY, start) {
@@ -53,14 +58,11 @@ class Rect {
         ? `rgb(${r} ${r} ${r})`
         : `rgb(${p} ${q} ${r})`;
 
-    const type = Math.random() < 0.3 ? "fill" : "stroke";
-
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.color = color;
-    this.type = type;
     this.dob = dob;
   }
 }

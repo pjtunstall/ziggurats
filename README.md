@@ -85,7 +85,7 @@ unrolled8 is 1.3031632417455552 times faster than naive.
 unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a buffer for drawing.
+On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops to make us of an offscreen canvas as a spare buffer for drawing.
 
 ```javascript
 for (let i = 0; i < this.model.rects.length; i++) {
