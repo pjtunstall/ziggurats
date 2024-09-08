@@ -7,7 +7,7 @@
 [3. Performance](#3-performance)
 
 - [Object pool](#object-pool)
-- [Separate arrays for each type of rectangle](#separere-arrays-for-each-type-of-rectangle)
+- [Seperate arrays for each type of rectangle](#seperate-arrays-for-each-type-of-rectangle)
 - [Loop unrolling](#loop-unrolling)
 - [Controlling the time step](#controlling-the-time-step)
 - [Worker thread and roll](#worker-thread-and-roll)
