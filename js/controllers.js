@@ -116,26 +116,11 @@ export class Controller {
     this.view.worker.postMessage({ type: "click", x, y });
   }
 
-  loop(timestamp) {
-    requestAnimationFrame((timestamp) => this.loop(timestamp));
-
-    if (timestamp - this.lastTimestamp < 16) {
-      return;
-    }
-    this.lastTimestamp = timestamp;
-
-    this.keysPressed.forEach((code) => {
-      this.actOnKeydown(code);
-    });
-  }
-
   startLoop() {
-    this.loopId = this.model.rAFForInputs
-      ? requestAnimationFrame((timestamp) => this.loop(timestamp))
-      : setInterval(() => {
-          this.keysPressed.forEach((code) => {
-            this.actOnKeydown(code);
-          });
-        }, 16);
+    this.loopId = setInterval(() => {
+      this.keysPressed.forEach((code) => {
+        this.actOnKeydown(code);
+      });
+    }, 16);
   }
 }

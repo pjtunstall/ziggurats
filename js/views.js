@@ -15,8 +15,10 @@ export class View {
       [this.offscreen]
     );
     this.worker.onmessage = (e) => {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(e.data, 0, 0, this.canvas.width, this.canvas.height);
+      requestAnimationFrame(() => {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(e.data, 0, 0, this.canvas.width, this.canvas.height);
+      });
     };
   }
 

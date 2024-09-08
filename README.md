@@ -134,15 +134,11 @@ Before adding a a worker thread for double buffering, I was finding that any non
 
 ### Central controller versus linear flow
 
-In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I'm curious as to what difference this might make, and the pros and cons of each design: central controller or linear flow.
+In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I wonder what the pros and cons of each design are: central controller or linear flow. Most of the advice I'm getting is to have the controller alone call other components.
 
 ### Encapsulations versus principle of least privilege
 
 My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);` (before I moved drawing to a worker thread), but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way. (This was before moving the drawing to a web worker, when it was all done directly in `view`.)
-
-### When to use `requestAnimationFrame`
-
-Currently, I have a parameter `model.rAFForInputs`. When set to true, keypresses are checked in a `requestAnimationFrame` callback; when false (as by default), in a `setInterval` callback. I'm not sure if one is preferable. There's no marked difference in performance. `setInterval` is simpler. I've also wondered whether the `onmessage` handler from the worker (where the bitmap image is copied to the onscreen canvas) should be wrapped in a `requestAnimationFrameCallback`. For now, it's not. The message is sent from a `rAF` callback in the worker thread.
 
 ### Blur
 
