@@ -6,15 +6,26 @@
 
 [3. Performance](#3-performance)
 
+- [Object pool](#object-pool)
+- [Separate arrays for each type of rectangle](#separere-arrays-for-each-type-of-rectangle)
+- [Loop unrolling](#loop-unrolling)
+- [Controlling the time step](#controlling-the-time-step)
+- [Worker thread and roll](#worker-thread-and-roll)
+
 [4. Questions](#4-questions)
 
-[5. Further ](#5-further)
+- [Central controller versus linear flow](#central-controller-versus-linear-flow)
+- [Encapsulations versus principle of least privilege](#encapsulations-versus-principle-of-least-privilege)
+- [When to use `requestAnimationFrame`](#when-to-use-requestanimationframe)
+- [Blur](#blur)
 
 ## 1. Intention
 
 [Ziggurats](https://ziggurats.netlify.app/) is a little exercise I came up with to help me learn about the Canvas API and MVC architecture.
 
-It's first attempt at writing something in the MVC style. I have a class called Model, one called View, and one called Controller. Controller imports Model and View, and calls their methods. `index.js` instantiates each, and calls the `startLoop` method of the Controller to set everything in motion. I was inspired by the [TodoMVC](https://todomvc.com/) ES6 example. My aim with the exercise was to immitate the style to understand it better.
+It's my first attempt at writing something in the MVC style. I have a class called Model, one called View, and one called Controller. Controller imports Model and View, and calls their methods. `index.js` instantiates each, and calls the `startLoop` method of the Controller to set everything in motion. I was inspired by the [TodoMVC](https://todomvc.com/) ES6 example. My aim was to immitate the style to understand it better rather than because I thought it was particularly appropriate to this use case.
+
+It also turned into an exploration of some performance considerations.
 
 ## 2. Instructions
 
@@ -22,19 +33,27 @@ Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click t
 
 ## 3. Performance
 
+### Object pool
+
 At present, I'm storing active rectangles in an array. Each frame, I spawn a new rectangle, pushing it to the array. If the array then contains more than 255 rectangles, I shift it to remove the first.
 
 ```javascript
-this.model.spawnRect(); // this.rects.push(new Rect(this.midX, this.midY, this.start));
+rects.push(new Rect());
 
 // ...
 
-if (this.model.rects.length > 255) {
-  this.model.rects.shift();
+if (rects.length > 255) {
+  rects.shift();
 }
 ```
 
 I was suprised to see that this naive approach was actually more performant than my attempt at keeping a pool of rectangle objects. I marked them as active or inactive, only drawing and zooming the active ones, and pushing a new one only if there wasn't an inactive rectangle that could be reactivated. Apparently, any benefit from the pool was outweighed by the cost of the extra loop to check for inactive rectangles and/or the extra condition to only zoom and draw active rectangles.
+
+### Separate arrays for each type of rectangle
+
+In another failed attempt at optimization, I tried using separate arrays for the two types of rectangle, fill (solid rectangles) and stroke (outlines). The idea was that I could draw all rectangles of a particular type together to save switching back and forth between drawing styles. In practice, it didn't seem to help performance, and I lost the nice effect of the two types being irregularly interleaved.
+
+### Loop unrolling
 
 On the other hand, unrolling loops to take advantage of instruction-level parallelism did improve performance. I learn this idea from Casey Muratori's course [Performance Aware Programming](https://www.computerenhance.com/p/table-of-contents). Run `node benchmarks/translate_benchmark.js` to compare the naive version of `controller.translate` with four other versions unrolled to pack, respectively, 2, 4, 8, and 16 naive iterations into one.
 
@@ -81,40 +100,51 @@ unrolled8 is 1.3031632417455552 times faster than naive.
 unrolled16 is 1.3248826291079812 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop in `controller.loop` with an eightfold unrolled one, although later I split it into two eightfold loops so that logic updates could be separated from rendering.
+On the basis of such results, I also replaced the following simple loop with an eightfold unrolled one, although later I split it into two eightfold loops so that logic updates could be separated from rendering, in order to prevent the logic updates from happening faster on computers with a refresh rate greater than 60Hz.
 
 ```javascript
-for (let i = 0; i < this.model.rects.length; i++) {
-  const rect = this.model.rects[i];
-  this.zoom(rect);
-  this.view.drawRect(rect);
-}
+rects.forEach((rect) => {
+  zoom(rect);
+  drawRect(rect);
+});
 ```
 
-Another thing that initially suprised me: according to the frame-rate display in Chrome (frame rendering stats), setting `controller.frame = 50 / 3` and, in `controller.loop` running
+The current versions of these loops are to be found in `worker.js`.
+
+### Controlling the time step
+
+Another thing that puzzled me: according to the frame-rate display in Chrome (frame rendering stats), any condition for controlling the time step that was actually likely to be triggered by fluctuations in frame rate resulted in a drastic decline in performance, but without any noticeable jank. For example, when I had a `requestAnimationFrame` callback in `controller`:
 
 ```javascript
-if (timestamp - this.lastTimestamp < this.frame) {
+if (timestamp - this.lastTimestamp < 16.667) {
   return;
 }
 this.lastTimestamp = timestamp;
 ```
 
-performed much worse than setting `controller.frame = 16` or just comparing the elapsed time to 16 itself. The reason for such a condition is to give all users the same logical update speed even if their computer can perform animations with a frame rate greater than 60Hz.
-
-There seemed to be no problem with lower numbers. Higher values (including much higher values), for which the condition is likely to often evaluate to true, had a similarly drastic effect on the FPS display without any noticeable jank.
+There seemed to be no problem with lower numbers. Higher values (including much higher values), for which the condition was likely to evaluate to true very often, had a similar effect.
 
 My theory now is that this is due to how Chrome measures frame drops. If the animation doesn't happen as scheduled by `requestAnimationFrame`, I'm guessing that counts as a frame drop. I didn't notice such a phenomenon in our space invaders game, and there it was only the logic update that was being skipped; the rendering was always allowed. Indeed, on the present project, when I separated logic from rendering and made sure to never skip the rendering, Chrome's "frame rendering stats" were happy.
 
-Before adding a a worker thread for double buffering, I was finding that degree of roll, even if left unchanging, had an adverse effect on performance. (I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.) Since adding the worker, degree of roll no longer had a noticeable effect for me under normal conditions.
+### Worker thread and roll
+
+Before adding a a worker thread for double buffering, I was finding that any non-zero degree of roll, even if left unchanging, had an adverse effect on performance. (I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.) Since adding the worker, degree of roll no longer had a noticeable effect for me under normal conditions.
 
 ## 4. Questions
 
+### Central controller versus linear flow
+
 In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I'm curious as to what difference this might make, and the pros and cons of each design: central controller or linear flow.
+
+### Encapsulations versus principle of least privilege
 
 My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way. (This was before moving the drawing to a web worker, when it was all done directly in `view`.)
 
+### When to use `requestAnimationFrame`
+
 Currently, I have a parameter `model.rAFForInputs`. When set to true, keypresses are checked in a `requestAnimationFrame` callback; when false (as by default), in a `setInterval` callback. I'm not sure if one is preferable. There's no marked difference in performance. `setInterval` is simpler. I've also wondered whether the `onmessage` handler from the worker (where the bitmap image is copied to the onscreen canvas) should be wrapped in a `requestAnimationFrameCallback`. For now, it's not. The message is sent from a `rAF` callback in the worker thread.
+
+### Blur
 
 At one time, I tried adding this laser effect, called at the end of `controller.loop`. The lines were visible, but the blur was hidden by `clearCanvas` or, without `clearCanvas`, by the rectangles as they expanded to fill the screen, even though `drawFire` was called afterwards. Why?
 
