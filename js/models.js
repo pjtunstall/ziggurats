@@ -4,11 +4,10 @@ export class Model {
   normal;
   fast;
   omega; // pitch and yaw speed in px
-  theta; // total roll in radians
   midX;
   midY;
-  start;
   rects;
+  rAFForInputs;
 
   constructor() {
     this.speed = 0.05;
@@ -16,8 +15,6 @@ export class Model {
     this.normal = 0.05;
     this.fast = 0.1;
     this.omega = 4;
-    this.theta = 0;
-    this.start = Date.now();
-    this.rects = [];
+    this.rAFForInputs = false; // whether to use requestAnimationFrame or setInterval for inputs
   }
 }

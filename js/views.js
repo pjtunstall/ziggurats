@@ -2,29 +2,18 @@ export class View {
   canvas;
   ctx;
   dpr;
-  crossSize;
-  midX;
-  midY;
-  targetXOfStaticImage;
-  targetYOfStaticImage;
-  drawingCanvas;
-  drawingCtx;
 
   constructor() {
     this.dpr = devicePixelRatio;
-    this.crossSize = 16 * this.dpr;
     this.canvas = document.getElementById("canvas");
     this.setCanvasSize(this.canvas, innerWidth, innerHeight);
     this.ctx = this.canvas.getContext("2d");
-    this.drawCrosshairs();
-    this.drawingCanvas = document.createElement("canvas");
-    this.setCanvasSize(this.drawingCanvas, innerWidth, innerWidth);
-    this.drawingCtx = this.drawingCanvas.getContext("2d");
     this.offscreen = new OffscreenCanvas(canvas.width, canvas.height);
     this.worker = new Worker("js/worker.js");
-    this.worker.postMessage({ type: "init", canvas: this.offscreen }, [
-      this.offscreen,
-    ]);
+    this.worker.postMessage(
+      { type: "init", canvas: this.offscreen, dpr: this.dpr },
+      [this.offscreen]
+    );
     this.worker.onmessage = (e) => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(e.data, 0, 0, this.canvas.width, this.canvas.height);
@@ -59,75 +48,5 @@ export class View {
     canvas.style.height = `${height}px`;
     canvas.width = width * this.dpr;
     canvas.height = height * this.dpr;
-  }
-
-  clearCanvas() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawingCtx.clearRect(
-      0,
-      0,
-      this.drawingCanvas.width,
-      this.drawingCanvas.height
-    );
-  }
-
-  drawRect(rect) {
-    switch (rect.type) {
-      case "fill":
-        this.drawingCtx.fillStyle = rect.color;
-        this.drawingCtx.fillRect(rect.x, rect.y, rect.width, rect.height);
-        break;
-      case "stroke":
-        this.drawingCtx.strokeStyle = rect.color;
-        this.drawingCtx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-    }
-  }
-
-  copyRects() {
-    this.ctx.drawImage(
-      this.drawingCanvas,
-      0,
-      0,
-      this.drawingCanvas.width,
-      this.drawingCanvas.height
-    );
-  }
-
-  copyCrosshairs() {
-    this.ctx.drawImage(
-      this.staticCanvas,
-      this.midX - this.crossSize / 2,
-      this.midY - this.crossSize / 2,
-      this.crossSize,
-      this.crossSize
-    );
-  }
-
-  drawCrosshairs() {
-    const midway = this.crossSize / 2;
-
-    this.staticCanvas = document.createElement("canvas");
-    this.setCanvasSize(this.staticCanvas, this.crossSize, this.crossSize);
-    const ctx = this.staticCanvas.getContext("2d");
-
-    ctx.strokeStyle = "red";
-
-    ctx.beginPath();
-    ctx.moveTo(midway, 0);
-    ctx.lineTo(midway, this.crossSize);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(0, midway);
-    ctx.lineTo(this.crossSize, midway);
-    ctx.stroke();
-  }
-
-  roll(delta) {
-    const x = this.midX;
-    const y = this.midY;
-    this.drawingCtx.translate(x, y);
-    this.drawingCtx.rotate(delta);
-    this.drawingCtx.translate(-x, -y);
   }
 }

@@ -130,6 +130,12 @@ export class Controller {
   }
 
   startLoop() {
-    this.loopId = requestAnimationFrame((timestamp) => this.loop(timestamp));
+    this.loopId = this.model.rAFForInputs
+      ? requestAnimationFrame((timestamp) => this.loop(timestamp))
+      : setInterval(() => {
+          this.keysPressed.forEach((code) => {
+            this.actOnKeydown(code);
+          });
+        }, 16);
   }
 }

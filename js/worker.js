@@ -7,17 +7,29 @@ let lastTimestamp = 0;
 let start = Date.now();
 let loopId;
 let speed = 0.05;
-let omega = 4;
-let theta = 0;
+let omega = 4; // pitch and yaw speed in px
+let theta = 0; // total roll in radians
+let crossSize;
+let midway;
+let targetXOfStaticImage;
+let targetYOfStaticImage;
+let staticCanvas;
 
 onmessage = function (e) {
   switch (e.data.type) {
     case "init":
       offscreen = e.data.canvas;
       ctx = offscreen.getContext("2d");
+      dpr = e.data.dpr;
+      crossSize = 16 * dpr;
+      midway = crossSize / 2;
+      staticCanvas = new OffscreenCanvas(crossSize, crossSize);
       midX = offscreen.width / 2;
       midY = offscreen.height / 2;
+      targetXOfStaticImage = midX - midway;
+      targetYOfStaticImage = midY - midway;
       rects.length = 0;
+      drawCrosshairs();
       loopId = requestAnimationFrame(loop);
       break;
     case "roll":
@@ -151,6 +163,7 @@ function loop(timestamp) {
   requestAnimationFrame(loop);
 
   drawRects();
+  copyCrosshairs();
 
   if (timestamp - lastTimestamp < 16) {
     const bitmap = offscreen.transferToImageBitmap();
@@ -183,4 +196,30 @@ function loop(timestamp) {
 
   const bitmap = offscreen.transferToImageBitmap();
   postMessage(bitmap);
+}
+
+function drawCrosshairs() {
+  const ctx = staticCanvas.getContext("2d");
+
+  ctx.strokeStyle = "red";
+
+  ctx.beginPath();
+  ctx.moveTo(midway, 0);
+  ctx.lineTo(midway, crossSize);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, midway);
+  ctx.lineTo(crossSize, midway);
+  ctx.stroke();
+}
+
+function copyCrosshairs() {
+  ctx.drawImage(
+    staticCanvas,
+    targetXOfStaticImage,
+    targetYOfStaticImage,
+    crossSize,
+    crossSize
+  );
 }

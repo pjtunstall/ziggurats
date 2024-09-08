@@ -112,7 +112,9 @@ Before adding a a worker thread for double buffering, I was finding that degree 
 
 In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I'm curious as to what difference this might make, and the pros and cons of each design: central controller or linear flow.
 
-My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way.
+My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);`, but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way. (This was before moving the drawing to a web worker, when it was all done directly in `view`.)
+
+Currently, I have a parameter `model.rAFForInputs`. When set to true, keypresses are checked in a `requestAnimationFrame` callback; when false (as by default), in a `setInterval` callback. I'm not sure if one is preferable. There's no marked difference in performance. `setInterval` is simpler. I've also wondered whether the `onmessage` handler from the worker (where the bitmap image is copied to the onscreen canvas) should be wrapped in a `requestAnimationFrameCallback`. For now, it's not. The message is sent from a `rAF` callback in the worker thread.
 
 At one time, I tried adding this laser effect, called at the end of `controller.loop`. The lines were visible, but the blur was hidden by `clearCanvas` or, without `clearCanvas`, by the rectangles as they expanded to fill the screen, even though `drawFire` was called afterwards. Why?
 
@@ -166,4 +168,4 @@ if (this.model.isFire) {
 }
 ```
 
-directly after the lines dealing with the crosshairs. Note that this was before I implemented the roll motion and so not designed with that in mind.
+directly after the lines dealing with the crosshairs. Note that this was before I implemented the roll motion or adding the worker thread, and so would need adapting to the current way of doing things.
