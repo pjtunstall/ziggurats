@@ -86,18 +86,18 @@ translate(axis, sign, distance) { // unrolled
 }
 ```
 
-The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, and unrolled2 is frequently slower than naive, but, on the whole, the higher-numbered unrolls tend to be faster, up to 8 and 16, at least, which are very close and change places often.
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, and unrolled2 is frequently slower than naive, but, on the whole, the higher-numbered unrolls tend to be faster, up to 8 and 16, at least.
 
 ```
-naive: 5644
-unrolled2: 6164
-unrolled4: 4953
-unrolled8: 4331
-unrolled16: 4260
-naive is 1.0921332388377039 times faster than unrolled2.
-unrolled4 is 1.1395114072279426 times faster than naive.
-unrolled8 is 1.3031632417455552 times faster than naive.
-unrolled16 is 1.3248826291079812 times faster than naive.
+naive: 5611.487759
+unrolled2: 5506.649566
+unrolled4: 4699.428148999999
+unrolled8: 4221.712463
+unrolled16: 4080.0745829999996
+unrolled2 is 1.0190384718953804 times faster than naive.
+unrolled4 is 1.194078849826458 times faster than naive.
+unrolled8 is 1.3291970517130882 times faster than naive.
+unrolled16 is 1.3753395054053108 times faster than naive.
 ```
 
 On the basis of such results, I also replaced the following simple loop with an eightfold unrolled one, although later I split it into two eightfold loops so that logic updates could be separated from rendering, in order to prevent the logic updates from happening faster on computers with a refresh rate greater than 60Hz.

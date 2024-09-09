@@ -90,62 +90,59 @@ function naiveTranslate(axis, sign, distance) {
   }
 }
 
-let start = Date.now();
+let start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled2Translate("x", -1, 8);
 }
-const unrolled2 = Date.now() - start;
+const unrolled2 = performance.now() - start;
 
-start = Date.now();
+start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled4Translate("x", -1, 8);
 }
-const unrolled4 = Date.now() - start;
+const unrolled4 = performance.now() - start;
 
-start = Date.now();
+start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled8translate("x", -1, 8);
 }
-const unrolled8 = Date.now() - start;
+const unrolled8 = performance.now() - start;
 
-start = Date.now();
+start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled16translate("x", -1, 8);
 }
-const unrolled16 = Date.now() - start;
+const unrolled16 = performance.now() - start;
 
-start = Date.now();
+start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   naiveTranslate("x", -1, 8);
 }
-const naive = Date.now() - start;
+const naive = performance.now() - start;
 
-console.log("naive:", naive);
-console.log("unrolled2:", unrolled2);
-console.log("unrolled4:", unrolled4);
-console.log("unrolled8:", unrolled8);
-console.log("unrolled16:", unrolled16);
+const results = [
+  ["naive", naive],
+  ["unrolled2", unrolled2],
+  ["unrolled4", unrolled4],
+  ["unrolled8", unrolled8],
+  ["unrolled16", unrolled16],
+].sort((a, b) => a[1] < b[1]);
 
-if (unrolled2 < naive) {
-  console.log(`unrolled2 is ${naive / unrolled2} times faster than naive.`);
-} else {
-  console.log(`naive is ${unrolled2 / naive} times faster than unrolled2.`);
-}
+results.forEach((result) => {
+  console.log(`${result[0]}:`, result[1]);
+});
 
-if (unrolled4 < naive) {
-  console.log(`unrolled4 is ${naive / unrolled4} times faster than naive.`);
-} else {
-  console.log(`naive is ${unrolled4 / naive} times faster than unrolled4.`);
-}
-
-if (unrolled8 < naive) {
-  console.log(`unrolled8 is ${naive / unrolled8} times faster than naive.`);
-} else {
-  console.log(`naive is ${unrolled8 / naive} times faster than unrolled8.`);
-}
-
-if (unrolled16 < naive) {
-  console.log(`unrolled16 is ${naive / unrolled16} times faster than naive.`);
-} else {
-  console.log(`naive is ${unrolled16 / naive} times faster than unrolled16.`);
-}
+results.forEach((result) => {
+  if (result[0] === "naive") {
+    return;
+  }
+  if (result[1] < naive) {
+    console.log(
+      `${result[0]} is ${naive / result[1]} times faster than naive.`
+    );
+  } else {
+    console.log(
+      `Naive is ${result[1] / naive} times faster than ${result[0]}.`
+    );
+  }
+});
