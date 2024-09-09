@@ -1,3 +1,5 @@
+let results = {};
+
 let rects = [];
 for (let i = 0; i < 256; i++) {
   rects.push({
@@ -94,55 +96,46 @@ let start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled2Translate("x", -1, 8);
 }
-const unrolled2 = performance.now() - start;
+results.unrolled2 = performance.now() - start;
 
 start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled4Translate("x", -1, 8);
 }
-const unrolled4 = performance.now() - start;
+results.unrolled4 = performance.now() - start;
 
 start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled8translate("x", -1, 8);
 }
-const unrolled8 = performance.now() - start;
+results.unrolled8 = performance.now() - start;
 
 start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   unrolled16translate("x", -1, 8);
 }
-const unrolled16 = performance.now() - start;
+results.unrolled16 = performance.now() - start;
 
 start = performance.now();
 for (let i = 0; i < 10_000_000; i++) {
   naiveTranslate("x", -1, 8);
 }
-const naive = performance.now() - start;
+results.naive = performance.now() - start;
 
-const results = [
-  ["naive", naive],
-  ["unrolled2", unrolled2],
-  ["unrolled4", unrolled4],
-  ["unrolled8", unrolled8],
-  ["unrolled16", unrolled16],
-].sort((a, b) => a[1] < b[1]);
+resultsArray = Object.entries(results).sort((a, b) => b[1] - a[1]);
 
-results.forEach((result) => {
-  console.log(`${result[0]}:`, result[1]);
+resultsArray.forEach(([key, value]) => {
+  console.log(`${key}:`, value);
 });
 
-results.forEach((result) => {
-  if (result[0] === "naive") {
+resultsArray.forEach(([key, value]) => {
+  if (key === "naive") {
     return;
   }
-  if (result[1] < naive) {
-    console.log(
-      `${result[0]} is ${naive / result[1]} times faster than naive.`
-    );
+  const naiveValue = results.naive;
+  if (value < naiveValue) {
+    console.log(`${key} is ${naiveValue / value} times faster than naive.`);
   } else {
-    console.log(
-      `Naive is ${result[1] / naive} times faster than ${result[0]}.`
-    );
+    console.log(`naive is ${value / naiveValue} times faster than ${key}.`);
   }
 });

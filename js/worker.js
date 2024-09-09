@@ -57,8 +57,16 @@ onmessage = function (e) {
 function translate(axis, sign, distance) {
   let k;
   const difference = -sign * distance;
-  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    k = 8 * i;
+  for (let i = 0; i < Math.floor(rects.length / 16); i++) {
+    k = 16 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
@@ -68,7 +76,7 @@ function translate(axis, sign, distance) {
     rects[k++][axis] += difference;
     rects[k][axis] += difference;
   }
-  for (let i = 1; i <= rects.length % 8; i++) {
+  for (let i = 1; i <= rects.length % 16; i++) {
     rects[rects.length - i][axis] += difference;
   }
 }
@@ -144,8 +152,16 @@ function drawRect(rect) {
 
 function drawRects() {
   let k;
-  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    k = 8 * i;
+  for (let i = 0; i < Math.floor(rects.length / 16); i++) {
+    k = 16 * i;
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
+    drawRect(rects[k++]);
     drawRect(rects[k++]);
     drawRect(rects[k++]);
     drawRect(rects[k++]);
@@ -155,7 +171,7 @@ function drawRects() {
     drawRect(rects[k++]);
     drawRect(rects[k]);
   }
-  for (let i = 1; i <= rects.length % 8; i++) {
+  for (let i = 1; i <= rects.length % 16; i++) {
     drawRect(rects[rects.length - i]);
   }
 }
@@ -202,8 +218,16 @@ function loop(timestamp) {
   rects.push(new Rect());
 
   let k;
-  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    k = 8 * i;
+  for (let i = 0; i < Math.floor(rects.length / 16); i++) {
+    k = 16 * i;
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
+    zoom(rects[k++]);
     zoom(rects[k++]);
     zoom(rects[k++]);
     zoom(rects[k++]);
@@ -213,7 +237,7 @@ function loop(timestamp) {
     zoom(rects[k++]);
     zoom(rects[k]);
   }
-  for (let i = 1; i <= rects.length % 8; i++) {
+  for (let i = 1; i <= rects.length % 16; i++) {
     zoom(rects[rects.length - i]);
   }
 

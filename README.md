@@ -69,8 +69,16 @@ translate(axis, sign, distance) { // naive
 translate(axis, sign, distance) { // unrolled
   let k;
   const difference = -sign * distance;
-  for (let i = 0; i < Math.floor(rects.length / 8); i++) {
-    k = 8 * i;
+  for (let i = 0; i < Math.floor(rects.length / 16); i++) {
+    k = 16 * i;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
+    rects[k++][axis] += difference;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
     rects[k++][axis] += difference;
@@ -80,13 +88,13 @@ translate(axis, sign, distance) { // unrolled
     rects[k++][axis] += difference;
     rects[k][axis] += difference;
   }
-  for (let i = 1; i <= rects.length % 8; i++) {
+  for (let i = 1; i <= rects.length % 16; i++) {
     rects[rects.length - i][axis] += difference;
   }
 }
 ```
 
-The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, and unrolled2 is frequently slower than naive, but, on the whole, the higher-numbered unrolls tend to be faster, up to 8 and 16, at least.
+The benchmark populates an array with the maximum number, 256, of rectangle objects then compares all four functions over ten million trials each. The results that follow are typical. The order can vary, and unrolled2 is frequently slower than naive, but, on the whole, the higher-numbered unrolls tend to be faster, up to 16, at least.
 
 ```
 naive: 5611.487759
@@ -100,7 +108,7 @@ unrolled8 is 1.3291970517130882 times faster than naive.
 unrolled16 is 1.3753395054053108 times faster than naive.
 ```
 
-On the basis of such results, I also replaced the following simple loop with an eightfold unrolled one, although later I split it into two eightfold loops so that logic updates could be separated from rendering, in order to prevent the logic updates from happening faster on computers with a refresh rate greater than 60Hz.
+On the basis of such results, I also replaced the following simple loop with an unrolled one, although later I split it into two unrolled loops so that logic updates could be separated from rendering, in order to prevent the logic updates from happening faster on computers with a refresh rate greater than 60Hz.
 
 ```javascript
 rects.forEach((rect) => {
