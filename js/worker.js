@@ -204,17 +204,13 @@ function copyCrosshairs() {
 
 function loop(timestamp) {
   requestAnimationFrame(loop);
-
-  drawRects();
-  copyCrosshairs();
-
   if (timestamp - lastTimestamp < 16) {
-    const bitmap = offscreen.transferToImageBitmap();
-    postMessage(bitmap);
     return;
   }
   lastTimestamp = timestamp;
 
+  drawRects();
+  copyCrosshairs();
   rects.push(new Rect());
 
   let k;
