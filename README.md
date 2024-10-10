@@ -132,11 +132,11 @@ this.lastTimestamp = timestamp;
 
 There seemed to be no problem with lower numbers. Higher values (including much higher values), for which the condition was likely to evaluate to true very often, had a similar effect.
 
-My theory now is that this is due to how Chrome measures frame drops. If the animation doesn't happen as scheduled by `requestAnimationFrame`, I'm guessing that counts as a frame drop. I didn't notice such a phenomenon in our space invaders game, and there it was only the logic update that was being skipped; the rendering was always allowed. Indeed, on the present project, when I separated logic from rendering and made sure to never skip the rendering, Chrome's "frame rendering stats" were happy.
+My theory now is that this is due to how Chrome measures frame drops. If the animation doesn't happen as scheduled by `requestAnimationFrame`, I'm guessing that counts as a frame drop. I didn't notice such a phenomenon in our [space invaders game](https://github.com/pjtunstall/retro-raiders), and there it was only the logic update that was being skipped; the rendering was always allowed. Indeed, on the present project, when I separated logic from rendering and made sure to never skip the rendering, Chrome's "frame rendering stats" were happy.
 
 ### Worker thread and roll
 
-Before adding a a worker thread for double buffering, I was finding that any non-zero degree of roll, even if left unchanging, had an adverse effect on performance. (I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before bing copied to the main canvas.) Since adding the worker, degree of roll no longer had a noticeable effect for me under normal conditions.
+Before adding a a worker thread for double buffering, I was finding that any non-zero degree of roll, even if left unchanging, had an adverse effect on performance. (I'm implementing roll by rotating the coordinate system of the offscreen canvas where the rectangles are drawn before being copied to the main canvas.) Since adding the worker, degree of roll no longer had a noticeable effect for me under normal conditions.
 
 ## 4. Questions
 
