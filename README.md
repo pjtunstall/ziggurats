@@ -21,9 +21,7 @@
 
 ## 1. Intention
 
-[Ziggurats](https://ziggurats.netlify.app/) is a little exercise I came up with to help me learn about the Canvas API and MVC architecture.
-
-It's my first attempt at writing something in the MVC style. I have a class called Model, one called View, and one called Controller. Controller imports Model and View, and calls their methods. `index.js` instantiates each, and calls the `startLoop` method of the Controller to set everything in motion. I was inspired by the [TodoMVC](https://todomvc.com/) ES6 example. My aim was to immitate the style to understand it better rather than because I thought it was particularly appropriate to this use case.
+[Ziggurats](https://ziggurats.netlify.app/) is an exercise I came up with to help me learn about the Canvas API and MVC architecture. It's my first attempt at writing something in this style. I took inspiration from the [TodoMVC](https://todomvc.com/) ES6 example. My aim was to imitate it to understand it better rather than because I thought it was particularly appropriate to this use case.
 
 It also turned into an exploration of some performance considerations.
 

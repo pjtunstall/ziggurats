@@ -1,4 +1,4 @@
-let offscreen;
+let canvas;
 let ctx;
 let midX;
 let midY;
@@ -18,21 +18,24 @@ let staticCanvas;
 onmessage = function (e) {
   switch (e.data.type) {
     case "init":
-      offscreen = e.data.canvas;
-      ctx = offscreen.getContext("2d");
+      canvas = e.data.canvas;
+      ctx = canvas.getContext("2d");
       dpr = e.data.dpr;
+      loopId = requestAnimationFrame(loop);
+      break;
+    case "resize":
+      canvas.width = e.data.width * dpr;
+      canvas.height = e.data.height * dpr;
+      midX = canvas.width / 2;
+      midY = canvas.height / 2;
+      targetXOfStaticImage = midX - midway;
+      targetYOfStaticImage = midY - midway;
       crossSize = 16 * dpr;
       midway = crossSize / 2;
       staticCanvas = new OffscreenCanvas(crossSize, crossSize);
-      midX = offscreen.width / 2;
-      midY = offscreen.height / 2;
-      targetXOfStaticImage = midX - midway;
-      targetYOfStaticImage = midY - midway;
       rects.length = 0;
       this.omega = e.data.omega;
       drawCrosshairs();
-      loopId = requestAnimationFrame(loop);
-      break;
     case "roll":
       const delta = e.data.clockwise ? Math.PI / 64 : -Math.PI / 64;
       roll(delta);
@@ -240,7 +243,8 @@ function loop(timestamp) {
   if (rects.length > 255) {
     rects.shift();
   }
-
-  const bitmap = offscreen.transferToImageBitmap();
-  postMessage(bitmap);
 }
+
+self.onclose = function () {
+  cancelAnimationFrame(loopId);
+};

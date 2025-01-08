@@ -1,6 +1,3 @@
-import { Model } from "./models.js";
-import { View } from "./views.js";
-
 export class Controller {
   model;
   view;
@@ -13,8 +10,6 @@ export class Controller {
     this.model = model;
     this.view = view;
     this.keysPressed = new Set();
-    this.setMidpoint();
-    this.setCrossVariablesForView();
     this.view.addEventListener("keydown", (keyCode) =>
       this.handleKeydown(keyCode)
     );
@@ -93,23 +88,7 @@ export class Controller {
   }
 
   reset() {
-    this.view.worker.terminate();
-    this.model = new Model();
-    this.view = new View();
-    this.setMidpoint();
-  }
-
-  setMidpoint() {
-    this.model.midX = (this.view.dpr * innerWidth) / 2;
-    this.model.midY = (this.view.dpr * innerHeight) / 2;
-    this.view.midX = this.model.midX;
-    this.view.midY = this.model.midY;
-  }
-
-  setCrossVariablesForView() {
-    this.view.targetXOfStaticImage = this.view.midX - this.view.crossSize / 2;
-    this.view.targetYOfStaticImage =
-      this.view.midY - this.view.targetXOfStaticImage;
+    this.view.setCanvasSize(innerWidth, innerHeight);
   }
 
   handleClick(x, y) {

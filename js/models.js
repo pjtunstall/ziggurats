@@ -4,9 +4,6 @@ export class Model {
   normal;
   fast;
   omega; // pitch and yaw speed in px
-  midX;
-  midY;
-  rects;
   rAFForInputs;
 
   constructor() {
