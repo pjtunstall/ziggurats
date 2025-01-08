@@ -42,12 +42,13 @@ onmessage = function (e) {
       roll(delta);
       break;
     case "translate":
-      translate(e.data.axis, e.data.sign);
+      translate(e.data.axis, e.data.sign, omega);
       break;
     case "speed":
       speed = e.data.speed;
       break;
     case "click":
+      console.log(e.data);
       roll(-theta);
       const deltaX = e.data.x - midX;
       const deltaY = e.data.y - midY;
@@ -58,9 +59,9 @@ onmessage = function (e) {
   }
 };
 
-function translate(axis, sign) {
+function translate(axis, sign, distance) {
   let k;
-  const difference = -sign * omega;
+  const difference = -sign * distance;
   for (let i = 0; i < Math.floor(rects.length / 16); i++) {
     k = 16 * i;
     rects[k++][axis] += difference;
