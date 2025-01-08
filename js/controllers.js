@@ -48,7 +48,6 @@ export class Controller {
           type: "translate",
           axis: "y",
           sign: -1,
-          distance: this.model.omega,
         });
         return;
       case "ArrowDown":
@@ -56,7 +55,6 @@ export class Controller {
           type: "translate",
           axis: "y",
           sign: 1,
-          distance: this.model.omega,
         });
         return;
       case "ArrowLeft":
@@ -64,7 +62,6 @@ export class Controller {
           type: "translate",
           axis: "x",
           sign: -1,
-          distance: this.model.omega,
         });
         return;
       case "ArrowRight":
@@ -72,7 +69,6 @@ export class Controller {
           type: "translate",
           axis: "x",
           sign: 1,
-          distance: this.model.omega,
         });
         return;
       case "KeyZ": {

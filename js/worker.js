@@ -5,7 +5,6 @@ let midY;
 let rects = [];
 let lastTimestamp = 0;
 let start = Date.now();
-let loopId;
 let speed = 0.1;
 let omega = 4; // pitch and yaw speed in px
 let theta = 0; // total roll in radians
@@ -21,27 +20,29 @@ onmessage = function (e) {
       canvas = e.data.canvas;
       ctx = canvas.getContext("2d");
       dpr = e.data.dpr;
-      loopId = requestAnimationFrame(loop);
+      requestAnimationFrame(loop);
       break;
     case "resize":
       canvas.width = e.data.width * dpr;
       canvas.height = e.data.height * dpr;
       midX = canvas.width / 2;
       midY = canvas.height / 2;
-      targetXOfStaticImage = midX - midway;
-      targetYOfStaticImage = midY - midway;
       crossSize = 16 * dpr;
       midway = crossSize / 2;
+      targetXOfStaticImage = midX - midway;
+      targetYOfStaticImage = midY - midway;
       staticCanvas = new OffscreenCanvas(crossSize, crossSize);
-      rects.length = 0;
-      this.omega = e.data.omega;
       drawCrosshairs();
+      rects.length = 0;
+      omega = 4;
+      theta = 0;
+      break;
     case "roll":
       const delta = e.data.clockwise ? Math.PI / 64 : -Math.PI / 64;
       roll(delta);
       break;
     case "translate":
-      translate(e.data.axis, e.data.sign, e.data.distance);
+      translate(e.data.axis, e.data.sign);
       break;
     case "speed":
       speed = e.data.speed;
@@ -57,9 +58,9 @@ onmessage = function (e) {
   }
 };
 
-function translate(axis, sign, distance) {
+function translate(axis, sign) {
   let k;
-  const difference = -sign * distance;
+  const difference = -sign * omega;
   for (let i = 0; i < Math.floor(rects.length / 16); i++) {
     k = 16 * i;
     rects[k++][axis] += difference;
@@ -244,7 +245,3 @@ function loop(timestamp) {
     rects.shift();
   }
 }
-
-self.onclose = function () {
-  cancelAnimationFrame(loopId);
-};
