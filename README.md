@@ -15,8 +15,7 @@
 [4. Questions](#4-questions)
 
 - [Central controller versus linear flow](#central-controller-versus-linear-flow)
-- [Encapsulations versus principle of least privilege](#encapsulations-versus-principle-of-least-privilege)
-- [When to use `requestAnimationFrame`](#when-to-use-requestanimationframe)
+- [Encapsulation versus principle of least privilege](#encapsulation-versus-principle-of-least-privilege)
 - [Blur](#blur)
 
 ## 1. Intention
@@ -142,7 +141,7 @@ Before adding a a worker thread for double buffering, I was finding that any non
 
 In my interpretation of MVC, the controller calls methods of the other two components. But I've also seen examples where it's the view that calls methods of the controller, which calls methods of the model. I wonder what the pros and cons of each design are: central controller or linear flow. Most of the advice I'm getting is to have the controller alone call other components.
 
-### Encapsulations versus principle of least privilege
+### Encapsulation versus principle of least privilege
 
 My instinct was to pass just the necessary values from `controller` to `view` in `this.view.drawCrosshairs(this.model.midX, this.model.midY);` (before I moved drawing to a worker thread), but there was a suggestion that it might be more in keeping with MVC philosophy to pass `model` and let `view` extract the values it needs. I've followed my original idea for now, considering that the controller is supposed to mediate between the others, but I'd be curious to hear arguments either way. (This was before moving the drawing to a web worker, when it was all done directly in `view`.)
 
