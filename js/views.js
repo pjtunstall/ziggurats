@@ -21,7 +21,7 @@ export class View {
         case "resize":
           handler();
         case "keydown":
-          if (event.code === "Tab") {
+          if (event.code === "KeyS") {
             event.preventDefault();
           }
           handler(event.code);

@@ -25,8 +25,8 @@ export class Controller {
   handleKeyup(keyCode) {
     this.keysPressed.delete(keyCode);
     switch (keyCode) {
-      case "Tab":
-      case "KeyQ":
+      case "KeyS":
+      case "KeyW":
         this.view.worker.postMessage({
           type: "speed",
           speed: this.model.normal,
@@ -37,10 +37,10 @@ export class Controller {
   // Called from `this.loop` on each key code in the set `keysPressed` so as to allow multiple key presses to be processed at once.
   actOnKeydown(keyCode) {
     switch (keyCode) {
-      case "Tab":
+      case "KeyS":
         this.view.worker.postMessage({ type: "speed", speed: this.model.slow });
         return;
-      case "KeyQ":
+      case "KeyW":
         this.view.worker.postMessage({ type: "speed", speed: this.model.fast });
         return;
       case "ArrowUp":
@@ -71,11 +71,11 @@ export class Controller {
           sign: 1,
         });
         return;
-      case "KeyZ": {
+      case "KeyA": {
         this.view.worker.postMessage({ type: "roll", clockwise: false });
         return;
       }
-      case "KeyX":
+      case "KeyD":
         this.view.worker.postMessage({ type: "roll", clockwise: true });
         return;
       case "Space":

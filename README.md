@@ -26,7 +26,7 @@ It also turned into an exploration of some performance considerations.
 
 ## 2. Instructions
 
-Arrow keys to pitch and yaw, Z and X to roll. Tab and Q to adjust speed. Click to spawn rectangles from an arbitrary point. Space to reset.
+Arrow keys to pitch and yaw, Z and X to roll. W and S to adjust speed. Click to spawn rectangles from an arbitrary point. Space to reset.
 
 ## 3. Performance
 
