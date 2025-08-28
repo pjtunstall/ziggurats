@@ -50,8 +50,8 @@ onmessage = function (e) {
     case "click":
       console.log(e.data);
       roll(-theta);
-      const deltaX = e.data.x - midX;
-      const deltaY = e.data.y - midY;
+      const deltaX = e.data.x * dpr - midX;
+      const deltaY = e.data.y * dpr - midY;
       translate("x", 1, -deltaX);
       translate("y", 1, -deltaY);
       roll(theta);
