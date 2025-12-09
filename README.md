@@ -118,7 +118,7 @@ The current versions of these loops are to be found in `worker.js`.
 
 ### Controlling the time step
 
-Another thing that puzzled me: according to the frame-rate display in Chrome (frame rendering stats), any condition for controlling the time step that was actually likely to be triggered by fluctuations in frame rate resulted in a drastic decline in performance, but without any noticeable jank. For example, when I had a `requestAnimationFrame` callback in `controller`:
+Another thing that puzzled me: according to the frame-rate display in Chrome (frame rendering stats), any condition for controlling the time step that was actually likely to be triggered by fluctuations in frame rate resulted in a drastic decline in performance. It didn't, however, result in any noticeable jank. For example, when I had a `requestAnimationFrame` callback in `controller`:
 
 ```javascript
 if (timestamp - this.lastTimestamp < 16.667) {
